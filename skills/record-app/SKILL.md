@@ -228,8 +228,17 @@ If a dependency is missing, the skill should inform the user and offer installat
 
 ## Background Music
 
-Default: smooth jazz at 15% volume. Ask user before adding music:
-- "Want background music? I can add **jazz** (default), **lo-fi**, **ambient**, or **none**."
+Default: Beethoven Sonata No. 32 at 15% volume. Ask user before adding music:
+- "Want background music? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**."
 - Music is looped/cropped to match video duration
 - Volume: 15% of original audio (ducked so UI sounds remain audible)
 - Fades in over first 2s, fades out over last 2s
+
+### Available Tracks
+
+| File | Track | Duration |
+|------|-------|----------|
+| `beethoven-sonata-32.mp3` | Sonata No. 32 in C Minor, Op. 111 — I. Maestoso | ~12 min |
+| `beethoven-sonata-1.mp3` | Sonata No. 1 in F Minor, Op. 2 No. 1 — IV. Prestissimo | ~4 min |
+| `beethoven-sonata-15.mp3` | Sonata No. 15 in D Major, Op. 28 "Pastoral" — IV. Rondo | ~6 min |
+| `beethoven-sonata-22.mp3` | Sonata No. 22 in F Major, Op. 54 — II. Allegretto | ~8 min |

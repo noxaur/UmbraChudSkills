@@ -112,17 +112,16 @@ Return summary of edits made with publish status:
 
 ## Music Library
 
-Background music files should be stored in `skills/record-app/music/`:
+Background music files are stored in `skills/record-app/music/`:
 
-| File | Genre | Mood |
+| File | Track | Mood |
 |------|-------|------|
-| `smooth-jazz.mp3` | Jazz | Professional, relaxed |
-| `lofi-beat.mp3` | Lo-fi | Casual, modern |
-| `ambient.mp3` | Ambient | Calm, neutral |
+| `beethoven-sonata-32.mp3` | Sonata No. 32 in C Minor, Op. 111 — I. Maestoso | Dramatic, classical |
+| `beethoven-sonata-1.mp3` | Sonata No. 1 in F Minor, Op. 2 No. 1 — IV. Prestissimo | Energetic, intense |
+| `beethoven-sonata-15.mp3` | Sonata No. 15 in D Major, Op. 28 "Pastoral" — IV. Rondo | Light, pastoral |
+| `beethoven-sonata-22.mp3` | Sonata No. 22 in F Major, Op. 54 — II. Allegretto | Playful, rhythmic |
 
-If no music files exist, inform the user:
-- "No music files found. Add MP3 files to `skills/record-app/music/` or provide a URL."
-- Offer to download royalty-free music from a URL.
+Default: `beethoven-sonata-32.mp3` at 15% volume.
 
 ## Common Recipes
 

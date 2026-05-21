@@ -166,15 +166,14 @@ function buildFfmpegCommand(clipPaths, output, scenes, viewport, music) {
 }
 
 function getMusicFile(genre) {
-  // Return path to music file based on genre
-  // For now, use a placeholder — user should provide their own
   const musicDir = path.join(__dirname, '..', 'music');
   const files = {
+    beethoven: path.join(musicDir, 'beethoven-sonata-32.mp3'),
     jazz: path.join(musicDir, 'smooth-jazz.mp3'),
     lofi: path.join(musicDir, 'lofi-beat.mp3'),
     ambient: path.join(musicDir, 'ambient.mp3'),
   };
-  return files[genre] || files.jazz;
+  return files[genre] || files.beethoven;
 }
 
 main().catch(err => {
