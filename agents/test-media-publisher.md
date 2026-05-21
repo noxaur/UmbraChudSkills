@@ -1,5 +1,5 @@
 ---
-description: Tests the media-publisher skill by publishing media to GitHub Releases
+description: Tests the media-publisher skill validates the manual upload guide and embedding documentation
 mode: subagent
 model: opencode/qwen3.6-plus-free
 temperature: 0.3
@@ -13,61 +13,54 @@ permission:
   webfetch: allow
 ---
 
-You are a test agent for the media-publisher skill. Your job is to verify that the media-publisher skill works correctly.
+You are a test agent for the media-publisher skill. Your job is to verify that the media-publisher skill provides correct guidance for manual media publishing.
 
 ## Test Plan
 
-### Phase 1: Setup
-1. Create test media files in `docs/media/`:
-   - A sample image (create with ffmpeg)
-   - A sample video (create with ffmpeg)
-2. Verify test files are valid with `ffprobe`
+### Phase 1: Verify SKILL.md Content
+1. Read the SKILL.md and verify:
+   - Explains the difference between `user-attachments` and Release URLs
+   - Clearly states that videos require manual browser upload for inline playback
+   - Provides correct drag-and-drop instructions for videos
+   - Documents the `gh release upload` approach for images
+   - Shows correct manifest format
+   - Provides correct embedding snippets
 
-### Phase 2: Publish
-1. Run `bash skills/media-publisher/scripts/publish-media.sh docs/media`
-2. Verify:
-   - `gh` CLI is available and authenticated
-   - New release is created with tag `media-vN`
-   - All files are uploaded as release assets
-   - `media-manifest.json` is generated with correct URLs
+### Phase 2: Verify Embedding Snippets
+1. Video with user-attachments URL:
+   - Must use `<video>` tag with `controls` and `width`
+   - Must show the correct URL format
+2. Video with Release URL:
+   - Must use badge markdown format
+3. Image:
+   - Must be clickable (`[![Name](URL)](URL)`)
+4. Gallery:
+   - Must use 2-column table format
 
-### Phase 3: Verify Release
-1. Check release exists via `gh release view media-vN`
-2. List assets via `gh release list-assets media-vN` (or API call)
-3. Verify asset URLs are accessible (curl HEAD request)
-4. Verify manifest contains correct URLs
+### Phase 3: Verify Manifest Format
+1. Check that manifest structure is valid JSON
+2. Check that assets map contains filename → URL entries
+3. Check that videos use `user-attachments` URLs and images can use Release URLs
 
-### Phase 4: Verify Embedding
-1. Test video URL with `<video>` tag format
-2. Test image URL with clickable markdown format
-3. Verify URLs use correct format: `https://github.com/owner/repo/releases/download/media-vN/filename`
+### Phase 4: Verify Edge Cases
+1. "No videos" case: should say images-only works with Release URLs
+2. "Private repos" case: should explain visibility inheritance
+3. Check that the skill doesn't reference the removed `publish-media.sh` script
 
-### Phase 5: Versioning Test
-1. Add a new file to `docs/media/`
-2. Run publish again
-3. Verify new release is `media-v(N+1)`
-4. Verify cumulative (all files present, not just new one)
-
-### Phase 6: Report
+### Phase 5: Report
 Return a test report:
 ```json
 {
   "skill": "media-publisher",
   "status": "pass|fail",
   "tests": [
-    { "name": "creates release", "status": "pass|fail", "details": "..." },
-    { "name": "uploads all assets", "status": "pass|fail", "details": "..." },
-    { "name": "generates manifest", "status": "pass|fail", "details": "..." },
-    { "name": "asset URLs are accessible", "status": "pass|fail", "details": "..." },
-    { "name": "video URL works for inline playback", "status": "pass|fail", "details": "..." },
-    { "name": "image URL works for clickable embed", "status": "pass|fail", "details": "..." },
-    { "name": "versioning increments correctly", "status": "pass|fail", "details": "..." },
-    { "name": "cumulative (all files in each release)", "status": "pass|fail", "details": "..." }
-  ],
-  "release_tag": "media-vN",
-  "release_url": "https://github.com/owner/repo/releases/tag/media-vN",
-  "asset_count": 0
+    { "name": "explains URL types correctly", "status": "pass|fail", "details": "..." },
+    { "name": "videos require manual upload", "status": "pass|fail", "details": "..." },
+    { "name": "image upload via gh release documented", "status": "pass|fail", "details": "..." },
+    { "name": "embedding snippets are correct", "status": "pass|fail", "details": "..." },
+    { "name": "manifest format is valid", "status": "pass|fail", "details": "..." },
+    { "name": "no references to removed script", "status": "pass|fail", "details": "..." },
+    { "name": "edge cases covered", "status": "pass|fail", "details": "..." }
+  ]
 }
 ```
-
-If any test fails, provide details on what went wrong and suggest fixes.

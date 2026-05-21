@@ -11,8 +11,8 @@ A curated collection of OpenCode skills for codebase auditing, issue resolution,
 | [`codebase-auditor`](skills/codebase-auditor/) | Analyze a codebase for bugs, security, performance, and architecture issues. Verifies each issue by reproducing it, creates GitHub issues, then uses the triage skill to review, label, and comment. |
 | [`issue-resolver`](skills/issue-resolver/) | Receive, reproduce, fix, and submit PRs for GitHub issues. Uses TDD, verification before completion, and subagent-driven development for large tasks. |
 | [`record-app`](skills/record-app/) | Capture screenshots and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Stitches clips into a polished demo video with optional background music (default: Beethoven). |
-| [`media-publisher`](skills/media-publisher/) | Publish media assets to GitHub for inline embedding. Uses user-attachments URLs for inline video playback, falls back to GitHub Releases for clickable links. |
-| [`create-project-readme`](skills/create-project-readme/) | Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Uses user-attachments URLs for inline playback. |
+| [`media-publisher`](skills/media-publisher/) | Guide the user through publishing media to GitHub. Videos require manual browser upload for inline playback; images can use Release URLs. |
+| [`create-project-readme`](skills/create-project-readme/) | Analyze a codebase and generate a comprehensive README.md with embedded screenshots and demo videos. Videos require manual browser upload for inline playback. |
 | [`media-editor`](skills/media-editor/) | Edit, enhance, and post-process demo videos and images. Trim, add music, watermark, resize, color-correct, and more. |
 | [`karpathy-guidelines`](skills/karpathy-guidelines/) | Behavioral guidelines to reduce common LLM coding mistakes. Think before coding, simplicity first, surgical changes, goal-driven execution. |
 
@@ -69,7 +69,7 @@ cp agents/*.md ~/.config/opencode/agents/
 | [`test-orchestrator`](agents/test-orchestrator.md) | Runs all test agents in parallel and compiles a master report |
 | [`test-record-app`](agents/test-record-app.md) | Screenshots, MP4 output, aspect ratio, gallery images, background music |
 | [`test-media-editor`](agents/test-media-editor.md) | Trim, watermark, resize, format conversion, fade effects |
-| [`test-media-publisher`](agents/test-media-publisher.md) | GitHub Releases, asset URLs, versioning, cumulative uploads |
+| [`test-media-publisher`](agents/test-media-publisher.md) | Manual upload guide, manifest structure, embedding snippets |
 | [`test-codebase-auditor`](agents/test-codebase-auditor.md) | SQL injection, XSS, hardcoded secrets, N+1 queries, error handling |
 | [`test-issue-resolver`](agents/test-issue-resolver.md) | TDD workflow, PR creation, issue linking, acceptance criteria |
 | [`test-create-project-readme`](agents/test-create-project-readme.md) | Codebase analysis, README generation, accuracy, media capture |
@@ -100,9 +100,7 @@ skills/
 ├── media-editor/
 │   └── SKILL.md
 ├── media-publisher/
-│   ├── SKILL.md
-│   └── scripts/
-│       └── publish-media.sh
+│   └── SKILL.md
 └── record-app/
     ├── SKILL.md
     ├── music/
@@ -119,11 +117,10 @@ skills/
         ├── capture-linux.sh
         └── resize-images.sh
 
-docs/media/                         # Generated at runtime by record-app + media-publisher
+docs/media/                         # Generated at runtime by record-app
 ├── demo-web.mp4
 ├── landing-desktop-web.png
-├── dashboard-desktop-web.png
-└── media-manifest.json
+└── dashboard-desktop-web.png
 
 agents/
 ├── test-orchestrator.md

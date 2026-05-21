@@ -21,7 +21,7 @@ Run these test agents in parallel using the Task tool:
 
 1. **@test-record-app** — Tests record-app skill (screenshots, video, music, aspect ratio)
 2. **@test-media-editor** — Tests media-editor skill (trim, resize, watermark, format conversion)
-3. **@test-media-publisher** — Tests media-publisher skill (GitHub Releases, asset URLs, versioning)
+3. **@test-media-publisher** — Tests media-publisher skill (manual upload guide, embedding docs, manifest format)
 4. **@test-codebase-auditor** — Tests codebase-auditor skill (security, performance, architecture)
 5. **@test-issue-resolver** — Tests issue-resolver skill (TDD, PR creation, verification)
 6. **@test-create-project-readme** — Tests create-project-readme skill (analysis, generation, accuracy)
@@ -45,7 +45,7 @@ Create a comprehensive test report:
 |-------|--------|-------------|--------------|
 | record-app | ✅/❌ | X/Y | Z/Y |
 | media-editor | ✅/❌ | X/Y | Z/Y |
-| media-publisher | ✅/❌ | X/Y | Z/Y |
+| media-publisher | ✅/❌ | N/A (manual workflow) | N/A |
 | codebase-auditor | ✅/❌ | X/Y | Z/Y |
 | issue-resolver | ✅/❌ | X/Y | Z/Y |
 | create-project-readme | ✅/❌ | X/Y | Z/Y |
@@ -72,14 +72,13 @@ Create a comprehensive test report:
 - [ ] adds fade effects
 
 ### media-publisher
-- [ ] creates release
-- [ ] uploads all assets
-- [ ] generates manifest
-- [ ] asset URLs are accessible
-- [ ] video URL works for inline playback
-- [ ] image URL works for clickable embed
-- [ ] versioning increments correctly
-- [ ] cumulative (all files in each release)
+- [ ] explains URL types correctly (user-attachments vs Release)
+- [ ] states videos require manual browser upload for inline playback
+- [ ] documents image upload via gh release upload
+- [ ] provides correct embedding snippets
+- [ ] manifest format is valid
+- [ ] covers edge cases (no videos, private repos)
+- [ ] no references to removed publish-media.sh script
 
 ### codebase-auditor
 - [ ] detects SQL injection

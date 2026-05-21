@@ -82,19 +82,22 @@ Include all, or select which to record?
 - The `record-app` skill will:
   - Start the dev server
   - Navigate to key pages
-  - Capture screenshots, apply smooth animations, and stitch into a demo video
+  - Capture screenshots and record demo video
   - Save to `docs/media/demo-web.mp4` (and `demo-web-mobile.mp4` for mobile viewport)
-- Invoke the `media-publisher` skill to publish all media to GitHub.
+- Invoke the `media-publisher` skill to guide the user through publishing media to GitHub.
+  - Images can be auto-uploaded via `gh release upload`
+  - Videos require manual drag-and-drop into a GitHub issue (browser) to get `user-attachments` URLs for inline playback
 - If `record-app` fails (dev server won't start, pages error), fall back to static screenshots. If those also fail, proceed with text-only README.
 
 **If the project is a native application** (iOS, Android, macOS, Windows, Linux):
 - Invoke the `record-app` skill to capture media.
 - The `record-app` skill will:
   - Detect the platform and launch the app
-  - Capture key screens with smooth animations
-  - Stitch into a demo video per platform
+  - Capture key screens and record demo video
   - Save to `docs/media/demo-{platform}.mp4`
-- Invoke the `media-publisher` skill to publish all media to GitHub.
+- Invoke the `media-publisher` skill to guide the user through publishing media to GitHub.
+  - Images can be auto-uploaded via `gh release upload`
+  - Videos require manual drag-and-drop into a GitHub issue (browser) to get `user-attachments` URLs for inline playback
 - If `record-app` fails (app won't launch, simulator unavailable), proceed with text-only README.
 
 **If the project has no UI** (CLI tool, library, API-only):
@@ -111,7 +114,7 @@ Include all, or select which to record?
 
 ### Phase 3: Resolve Media URLs
 
-Check for `docs/media/media-manifest.json` (created by `media-publisher`):
+Check for `docs/media/media-manifest.json` (created manually or via `media-publisher`):
 
 **If manifest exists:**
 - Read all asset URLs from the manifest
@@ -120,15 +123,20 @@ Check for `docs/media/media-manifest.json` (created by `media-publisher`):
   - **user-attachments URLs** → Use `<video>` tags for inline playback
   - **Release URLs** → Use clickable badges (no inline video)
 - Images always use `[![Name](URL)](URL)` format (clickable, full resolution)
-- If >50% of URLs are valid (return 200 or file exists locally) → use manifest
+- If >50% of URLs are valid (return 200) → use manifest
 - If <50% valid → fall back to local paths with warning
 
 **If manifest does NOT exist:**
-- Fall back to local paths (`docs/media/...`)
-- Note in README: "Run `record-app` and `media-publisher` to enable inline media"
+- Show the user the captured files and explain:
+  - Videos need `user-attachments` URLs for inline playback
+  - Ask the user to drag videos into a GitHub issue/PR comment and provide the generated URLs
+  - For images, offer to run `gh release upload` for clickable Release URLs
+- Once URLs are collected, construct the manifest manually
+- If the user declines or can't provide URLs, fall back to local paths (`docs/media/...`)
+- Note in README: "Upload videos to a GitHub issue comment and paste the URLs to enable inline playback"
 
 **If `gh` CLI is not available:**
-- Skip publishing step entirely
+- Skip image upload entirely
 - Use local paths in the generated README
 
 ### Phase 4: Generate Media Gallery
