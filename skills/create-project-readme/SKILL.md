@@ -164,7 +164,7 @@ Use asset URLs for clickable images that open at full resolution:
 
 ### Phase 5: Generate README.md
 
-Create a structured README with these sections. Include sections only if applicable to the project:
+Create a structured README with these sections. Include sections only if applicable to the project. After generating, load the `humanize-writing` skill and run all 8 editing passes on the generated content to remove AI writing patterns before writing the final file.
 
 ```markdown
 # Project Name
