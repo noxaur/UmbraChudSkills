@@ -1,12 +1,12 @@
 ---
 name: create-project-readme
-description: Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Automatically captures visual media via the record-app skill for any platform (web, iOS, Android, macOS, Windows, Linux). Uses GitHub Releases asset URLs for inline video playback and clickable image enlargement. Use when asked to create a readme, document a project, generate project documentation, or write a README.md.
+description: Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Automatically captures visual media via the record-app skill for any platform (web, iOS, Android, macOS, Windows, Linux). Uses user-attachments URLs for inline video playback and clickable image enlargement. Use when asked to create a readme, document a project, generate project documentation, or write a README.md.
 license: MIT
 ---
 
 # Create Project README
 
-Analyze a codebase, capture visual media, publish to GitHub Releases, and generate a comprehensive README.md with inline video playback and clickable images.
+Analyze a codebase, capture visual media, publish to GitHub via media-publisher, and generate a comprehensive README.md with inline video playback and clickable images.
 
 ## Workflow
 
@@ -71,7 +71,7 @@ Great! A few options:
   - Navigate to key pages
   - Capture screenshots, apply smooth animations, and stitch into a demo video
   - Save to `docs/media/demo-web.mp4` (and `demo-web-mobile.mp4` for mobile viewport)
-  - Publish to GitHub Releases via `media-publisher` skill
+- Invoke the `media-publisher` skill to publish all media to GitHub.
 
 **If the project is a native application** (iOS, Android, macOS, Windows, Linux):
 - Invoke the `record-app` skill to capture media.
@@ -80,7 +80,7 @@ Great! A few options:
   - Capture key screens with smooth animations
   - Stitch into a demo video per platform
   - Save to `docs/media/demo-{platform}.mp4`
-  - Publish to GitHub Releases via `media-publisher` skill
+- Invoke the `media-publisher` skill to publish all media to GitHub.
 
 **If the project has no UI** (CLI tool, library, API-only):
 - Skip media capture.
