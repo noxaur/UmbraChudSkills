@@ -1,6 +1,6 @@
 ---
 name: create-project-readme
-description: Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Automatically captures visual media via the record-app skill for any platform (web, iOS, Android, macOS, Windows, Linux). Uses user-attachments URLs for inline video playback and clickable image enlargement. Use when asked to create a readme, document a project, generate project documentation, or write a README.md.
+description: Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Automatically captures visual media via the record-app skill for any platform (web, iOS, Android, macOS, Windows, Linux). Uses user-attachments URLs for inline video playback when available, falling back to Release URLs for clickable media. Use when asked to create a readme, document a project, generate project documentation, or write a README.md.
 license: MIT
 ---
 
@@ -30,16 +30,10 @@ Which would you prefer?
 ```
 Great! A few options:
 
-- **Platforms to record:** [auto-detected list, e.g., Web, iOS, Android]
-  (Select which to include, or "all")
-
 - **Animation style:**
   - Professional (clean fades, slow zooms)
   - Energetic (quick cuts, dynamic pans)
   - Minimal (no effects, straight cuts)
-
-- **Scenes to include:** [auto-detected list of key screens]
-  (Select which to include, or "all")
 
 - **Video length target:** 30s, 45s, or 60s
 
@@ -49,11 +43,17 @@ Great! A few options:
 
 **If the user doesn't respond to any question** — use these defaults:
 - Video: yes
-- Platforms: all detected
 - Animation style: professional
-- Scenes: all auto-detected key screens
 - Length: 45s
 - Music: Beethoven (Sonata No. 32 at 15% volume)
+
+**After Phase 1 (Analyze Codebase) completes**, present the auto-detected platforms and scenes for confirmation:
+
+```
+I detected these platforms: [list]
+Key screens/routes: [list]
+Include all, or select which to record?
+```
 
 ### Phase 1: Analyze Codebase
 
@@ -64,6 +64,13 @@ Great! A few options:
 
 ### Phase 2: Detect Project Type & Capture Media
 
+**Detection priority** (check in order, first match wins):
+1. Multiple distinct platforms (e.g., `react-native` + `next.js`, Electron + web) → multi-platform
+2. Mobile frameworks (React Native, Flutter, SwiftUI, Kotlin, Android XML) → native
+3. Desktop frameworks (Electron, Tauri, Flutter Desktop) → native (desktop)
+4. Web frameworks (React, Next.js, Vue, Svelte, Express, Django, Rails) → web
+5. No UI framework found → no-UI (CLI/library/API)
+
 **If the project is web-based** (React, Next.js, Vue, Svelte, Express, Django, etc.):
 - Invoke the `record-app` skill to capture media.
 - The `record-app` skill will:
@@ -72,6 +79,7 @@ Great! A few options:
   - Capture screenshots, apply smooth animations, and stitch into a demo video
   - Save to `docs/media/demo-web.mp4` (and `demo-web-mobile.mp4` for mobile viewport)
 - Invoke the `media-publisher` skill to publish all media to GitHub.
+- If `record-app` fails (dev server won't start, pages error), fall back to static screenshots. If those also fail, proceed with text-only README.
 
 **If the project is a native application** (iOS, Android, macOS, Windows, Linux):
 - Invoke the `record-app` skill to capture media.
@@ -81,6 +89,7 @@ Great! A few options:
   - Stitch into a demo video per platform
   - Save to `docs/media/demo-{platform}.mp4`
 - Invoke the `media-publisher` skill to publish all media to GitHub.
+- If `record-app` fails (app won't launch, simulator unavailable), proceed with text-only README.
 
 **If the project has no UI** (CLI tool, library, API-only):
 - Skip media capture.
@@ -90,52 +99,67 @@ Great! A few options:
 - Run `record-app` for each selected platform.
 - Embed all demo videos in the README, grouped by platform.
 
+**If README.md already exists:**
+- Ask: overwrite, merge into existing, or create as `README.generated.md`?
+- Default: create `README.generated.md` to avoid data loss.
+
 ### Phase 3: Resolve Media URLs
 
 Check for `docs/media/media-manifest.json` (created by `media-publisher`):
 
 **If manifest exists:**
 - Read all asset URLs from the manifest
-- Check URL type:
+- Validate manifest structure (must have `assets` map with at least one entry)
+- Check URL type for each asset:
   - **user-attachments URLs** → Use `<video>` tags for inline playback
   - **Release URLs** → Use clickable badges (no inline video)
 - Images always use `[![Name](URL)](URL)` format (clickable, full resolution)
+- If >50% of URLs are valid (return 200 or file exists locally) → use manifest
+- If <50% valid → fall back to local paths with warning
 
 **If manifest does NOT exist:**
 - Fall back to local paths (`docs/media/...`)
-- Note in README: "Run `record-app` and publish to GitHub to enable inline media"
+- Note in README: "Run `record-app` and `media-publisher` to enable inline media"
+
+**If `gh` CLI is not available:**
+- Skip publishing step entirely
+- Use local paths in the generated README
 
 ### Phase 4: Generate Media Gallery
 
-Use release asset URLs for clickable images that open at full resolution:
+Use asset URLs for clickable images that open at full resolution:
 
 ```markdown
 ## Screenshots
 
 | | |
 |---|---|
-| [![Landing](RELEASE_URL/landing-desktop-web.png?width=400)](RELEASE_URL/landing-desktop-web.png) | [![Dashboard](RELEASE_URL/dashboard-desktop-web.png?width=400)](RELEASE_URL/dashboard-desktop-web.png) |
+| [![Landing](URL/landing-desktop-web.png?width=400)](URL/landing-desktop-web.png) | [![Dashboard](URL/dashboard-desktop-web.png?width=400)](URL/dashboard-desktop-web.png) |
 | *Landing page* | *Dashboard view* |
-| [![Settings](RELEASE_URL/settings-desktop-web.png?width=400)](RELEASE_URL/settings-desktop-web.png) | [![Mobile View](RELEASE_URL/landing-mobile-web.png?width=400)](RELEASE_URL/landing-mobile-web.png) |
+| [![Settings](URL/settings-desktop-web.png?width=400)](URL/settings-desktop-web.png) | [![Mobile View](URL/landing-mobile-web.png?width=400)](URL/landing-mobile-web.png) |
 | *Settings panel* | *Mobile landing* |
 ```
 
 **Rules for the gallery:**
 - Maximum 6 images per platform (pick the most important screens)
-- Use release URLs for full-resolution access
-- Each image has a one-line caption below it
+- Prefer user-attachments URLs when available; fall back to Release URLs
+- Each image has a one-line caption below it (italic)
 - Group galleries by platform for multi-platform projects
 - If only 1-2 images, skip the table and embed directly
 - Images are clickable — opens full resolution in new tab
 
 ### Phase 5: Generate README.md
 
-Create a structured README with these sections:
+Create a structured README with these sections. Include sections only if applicable to the project:
 
 ```markdown
 # Project Name
 
 > Short tagline describing what the project does.
+
+[Optional: Badges — build status, version, license, coverage if CI/CD config exists]
+
+[Optional: Table of Contents — if README > 80 lines after generation]
 
 ## Demo
 
@@ -169,6 +193,11 @@ Create a structured README with these sections:
 [Run commands]
 \`\`\`
 
+[Optional: Testing — if test files or test scripts exist]
+\`\`\`bash
+[Test commands]
+\`\`\`
+
 ## Project Structure
 
 \`\`\`
@@ -182,7 +211,7 @@ Create a structured README with these sections:
 | \`npm run dev\` | Start development server |
 | \`npm run build\` | Build for production |
 
-## Configuration
+[Optional: Configuration — if .env.example or config files exist]
 
 | Variable | Description | Default |
 |----------|-------------|---------|
@@ -208,12 +237,14 @@ This project is licensed under the [LICENSE] License.
 
 - **Use GFM** (GitHub Flavored Markdown) — tables, code blocks, admonitions.
 - **Keep it concise** — no section should exceed what's necessary.
-- **No emojis overload** — use sparingly for visual breaks.
+- **No emojis overload** — max 3 per section, use sparingly for visual breaks.
 - **No LICENSE/CONTRIBUTING/CHANGELOG sections** — reference the separate files.
 - **Always prefer URLs** from `media-manifest.json` over local paths.
 - **If logo/icon exists** — use it in the header.
-- **Match project tone** — formal for enterprise, casual for open source.
+- **Match project tone** — formal for enterprise (strict types, CI/CD), casual for open source (MIT, informal commits).
 - **Always ask about media preferences** before capturing.
+- **Include descriptive alt text** on images — not just file names.
+- **Auto-detect package manager** — use `npm`, `yarn`, `pnpm`, or `bun` based on lockfile.
 
 ## Media Embedding
 
