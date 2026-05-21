@@ -24,7 +24,7 @@ You are a test agent for the media-publisher skill. Your job is to verify that t
 2. Verify test files are valid with `ffprobe`
 
 ### Phase 2: Publish
-1. Run `./skills/media-publisher/scripts/publish-media.sh docs/media`
+1. Run `bash skills/media-publisher/scripts/publish-media.sh docs/media`
 2. Verify:
    - `gh` CLI is available and authenticated
    - New release is created with tag `media-vN`

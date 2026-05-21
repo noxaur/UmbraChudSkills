@@ -49,7 +49,7 @@ Parse the user's edit request into specific operations:
 - Quality settings? (default: CRF 18 for video, q:v 2 for images)
 
 **If adding music, ask the user:**
-- "Want background music? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**."
+- "Want background music? I can add **Beethoven**, or **none**."
 - If user doesn't respond → default to **Beethoven** (Sonata No. 32 at 15% volume)
 
 ### Phase 2: Verify Source Files
@@ -90,7 +90,7 @@ Verify:
 After editing, copy edited files into `docs/media/` (alongside originals) and publish to GitHub Releases:
 
 1. Copy edited output to `docs/media/` (preserve originals, use descriptive names like `demo-web-edited.mp4`)
-2. Run `./skills/media-publisher/scripts/publish-media.sh docs/media`
+2. Invoke the `media-publisher` skill to upload the edited video
 3. This creates a new cumulative release (`media-vN+1`) with all files including edits
 4. Saves updated `docs/media/media-manifest.json` with new URLs
 5. Ask user: "Publish edited media to GitHub Releases?" (default: yes if `gh` available)
@@ -104,10 +104,10 @@ Return summary of edits made with publish status:
 {
   "source": "docs/media/demo-web.mp4",
   "output": "docs/media/demo-web-edited.mp4",
-  "edits": ["trimmed 0:00-0:30", "added jazz music", "color corrected"],
+  "edits": ["trimmed 0:00-0:30", "added background music", "color corrected"],
   "duration": "30s",
   "resolution": "1280x720",
-  "music": "smooth-jazz.mp3 (15% volume)",
+  "music": "beethoven-sonata-32.mp3 (15% volume)",
   "published": true,
   "release_tag": "media-v2",
   "asset_url": "https://github.com/owner/repo/releases/download/media-v2/demo-web-edited.mp4"
@@ -129,9 +129,9 @@ Default: `beethoven-sonata-32.mp3` at 15% volume.
 
 ## Common Recipes
 
-### Add jazz music to existing video
+### Add background music to existing video
 ```bash
-ffmpeg -y -i demo.mp4 -stream_loop -1 -i smooth-jazz.mp3 \
+ffmpeg -y -i demo.mp4 -stream_loop -1 -i beethoven-sonata-32.mp3 \
   -filter_complex "[1:a]volume=0.15,afade=t=in:st=0:d=2,afade=t=out:st=43:d=2[aout]" \
   -map 0:v -map "[aout]" -c:v copy -c:a aac -b:a 192k -movflags +faststart demo-with-music.mp4
 ```

@@ -58,7 +58,11 @@ function findMusicFile(music) {
   // If user provided a direct path, use it
   if (fs.existsSync(music)) return music;
   // Look up by genre
-  return getMusicFile(music);
+  const result = getMusicFile(music);
+  if (!result) {
+    console.warn(`Music file for '${music}' not found; skipping audio. Available: beethoven`);
+  }
+  return result;
 }
 
 async function main() {

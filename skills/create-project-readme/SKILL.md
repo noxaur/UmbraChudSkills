@@ -38,7 +38,7 @@ Great! A few options:
 - **Video length target:** 30s, 45s, or 60s
 
 - **Background music:**
-  - Want background music for the demo video? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**.
+  - Want background music for the demo video? I can add **Beethoven** or **none**.
 ```
 
 **If the user doesn't respond to any question** — use these defaults:
