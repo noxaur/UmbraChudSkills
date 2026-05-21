@@ -12,14 +12,14 @@
 | # | Skill | Status | Tests Passed | Tests Failed | Tests Skipped |
 |---|-------|--------|-------------|-------------|---------------|
 | 1 | record-app | **PASS** | 4 | 0 | 1 |
-| 2 | media-editor | **FAIL** | 7 | 1 | 0 |
+| 2 | media-editor | **PASS** | 8 | 0 | 0 |
 | 3 | media-publisher | **PASS** | 8 | 0 | 0 |
 | 4 | codebase-auditor | **PASS** | 8 | 0 | 0 |
 | 5 | issue-resolver | **PASS** | 7 | 0 | 0 |
 | 6 | create-project-readme | **PASS** | 9 | 0 | 0 |
 
-**Overall: 5/6 skills PASS, 1/6 skills FAIL**
-**Test pass rate: 42/42 attempted — 41 passed, 1 failed, 1 skipped**
+**Overall: 6/6 skills PASS**
+**Test pass rate: 42/42 attempted — 42 passed, 0 failed, 1 skipped**
 
 ---
 
@@ -52,7 +52,7 @@
   - SKILL.md references `smooth-jazz.mp3`, `lofi-beat.mp3`, `ambient.mp3` but none present
   - Skill correctly handles this: "If no music files exist, inform the user"
 
-### 2. media-editor — FAIL (7/8 passed, 1 failed)
+### 2. media-editor — PASS (8/8 passed)
 
 - [x] **trims video** — PASS
   - Output: `trimmed.mp4`, duration 2.02s (correctly cut to ~2 seconds)
@@ -74,12 +74,10 @@
   - Output: `bordered.png`, dimensions 820x620 (original 800x600 + 20px black border)
   - Command: `pad=iw+20:ih+20:10:10:black`
 
-- [ ] **overlays text on image** — FAIL
-  - Error: `[AVFilterGraph] No such filter: 'drawtext'`
-  - Root cause: ffmpeg build compiled without `--enable-libfreetype` / `--enable-fontconfig`
-  - SKILL.md documents `drawtext` filter for both video and image text overlay
-  - **Impact:** Watermark text overlays cannot be added without font support
-  - **Fix:** Reinstall ffmpeg with font support: `brew reinstall ffmpeg --with-fontconfig`
+- [x] **overlays text on image** — PASS (re-tested with ffmpeg-full)
+  - Output: `labeled.png` (800x600, PNG image data)
+  - Command: `ffmpeg -i test-image.png -vf "drawtext=text='Test Label':fontsize=30:fontcolor=white:x=50:y=50" labeled.png`
+  - ffmpeg-full 8.1.1 compiled with `--enable-libfreetype --enable-fontconfig`
 
 - [x] **converts image format** — PASS
   - Output: `converted.jpg` (5924 bytes)
@@ -238,59 +236,51 @@
 
 ## Failed Tests With Details
 
-### media-editor: overlays text on image — FAIL
+*All tests pass. No failures.*
 
-**Error:**
+### Previously Failed (Resolved)
+
+#### media-editor: overlays text on image — RESOLVED
+
+**Original Error:**
 ```
 [AVFilterGraph @ 0x927068000] No such filter: 'drawtext'
-Error opening output file /tmp/test-media-editor/labeled2.png.
-Error opening output files: Filter not found
 ```
 
-**Root Cause:** The installed ffmpeg (v8.1, Homebrew) was compiled without `--enable-libfreetype` and/or `--enable-fontconfig`, which are required for the `drawtext` filter.
+**Root Cause:** The initial ffmpeg (v8.1, Homebrew default) was compiled without `--enable-libfreetype` and `--enable-fontconfig`.
 
-**Impact:** The media-editor skill's `drawtext` operations (overlay text on video, overlay text on image) will fail on this system. The SKILL.md documents these as core capabilities.
+**Resolution:** User installed `ffmpeg-full` (8.1.1) which includes `--enable-libfreetype --enable-fontconfig`. Re-test confirmed `drawtext` filter works correctly.
 
-**Suggested Fix:**
-```bash
-brew reinstall ffmpeg --with-fontconfig
-# or install ffmpeg with full features:
-brew install ffmpeg --with-freetype --with-fontconfig
+**Verification:**
 ```
-
-**Workaround:** Use `sips` for basic image operations and accept that text overlay requires a different ffmpeg build.
+ffmpeg -i test-image.png -vf "drawtext=text='Test Label':fontsize=30:fontcolor=white:x=50:y=50" labeled.png
+```
+Output: `labeled.png` — PNG image data, 800 x 600, 8-bit/color RGB.
 
 ---
 
 ## Recommendations
 
-### Critical
-
-1. **ffmpeg drawtext filter** (media-editor skill)
-   - Reinstall ffmpeg with font support to enable text overlay operations
-   - This affects 2 documented capabilities: video text overlay and image text overlay
-   - Until fixed, the media-editor skill is partially functional (7/8 operations work)
-
 ### Medium
 
-2. **Missing music files** (record-app skill)
+1. **Missing music files** (record-app skill)
    - The SKILL.md references 3 music files (`smooth-jazz.mp3`, `lofi-beat.mp3`, `ambient.mp3`) in `skills/record-app/music/`
    - Directory doesn't exist — background music feature is non-functional
    - Add royalty-free music files or update SKILL.md to note music must be provided by user
 
-3. **record-app skill not fully tested end-to-end**
+2. **record-app skill not fully tested end-to-end**
    - The capture-web.js script requires Playwright/Chromium which wasn't tested in this run
    - Full end-to-end test (start server → capture → stitch → publish) requires browser automation
    - Script syntax is valid and all files exist, but runtime behavior unverified
 
 ### Low
 
-4. **codebase-auditor has no scripts**
+3. **codebase-auditor has no scripts**
    - The scripts directory is empty — all analysis is done via LLM reasoning
    - This is by design (SKILL.md describes LLM-driven analysis), but worth noting
    - Consider adding automated scanning scripts (e.g., `bandit` for Python, `semgrep`) as supplements
 
-5. **Test orchestration limitation**
+4. **Test orchestration limitation**
    - The Task tool for spawning subagents was unavailable in this environment
    - Tests were executed manually rather than in parallel via subagents
    - The test agent files (`test-*.md`) are well-structured and ready for subagent execution when Task tool is available
@@ -302,7 +292,7 @@ brew install ffmpeg --with-freetype --with-fontconfig
 | Component | Version/Status |
 |-----------|---------------|
 | Platform | macOS (darwin), Apple Silicon |
-| ffmpeg | 8.1 (Homebrew) — missing drawtext filter |
+| ffmpeg | 8.1.1 (ffmpeg-full, Homebrew) — drawtext filter available |
 | ffprobe | Available |
 | sips | Available (macOS built-in) |
 | gh CLI | Available, authenticated as `noxaur` |
