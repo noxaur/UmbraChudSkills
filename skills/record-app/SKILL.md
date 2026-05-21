@@ -1,6 +1,6 @@
 ---
 name: record-app
-description: Capture screenshots, GIFs, and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Automatically applies smooth animations and transitions, then stitches into a polished demo video with optional background music (default: Beethoven). Use when asked to record an app, capture screenshots, create a demo video, or document a UI visually.
+description: Capture screenshots and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Stitches captured clips into a polished demo video with optional background music (default: Beethoven). Use when asked to record an app, capture screenshots, create a demo video, or document a UI visually.
 license: MIT
 ---
 
@@ -132,28 +132,9 @@ Post-process all captured clips:
 
 5. **Clean up** — delete raw `.webm` clips, remove `.concat-list.txt`, keep only final `.mp4` and gallery `.png` files
 
-### Phase 5: Publish
+### Phase 5: Report
 
-Invoke the `media-publisher` skill to upload all media to GitHub:
-
-1. The `media-publisher` skill will check `gh` CLI is available and authenticated
-2. It will auto-detect the best upload method:
-   - **gh-image** → `user-attachments` URLs (inline video playback in README)
-   - **gh-attach** → `user-attachments` URLs (inline video playback)
-   - **gitshot** → Release assets (clickable thumbnails)
-   - **gh release** → Release assets (clickable thumbnails, fallback)
-3. Saves `docs/media/media-manifest.json` with asset URLs
-4. Ask user: "Publish media to GitHub for inline embedding?" (default: yes if `gh` available)
-
-If `gh` is not available, skip this phase and inform the user.
-If no `gh-image` or `gh-attach` is installed, inform the user that inline video requires one of these:
-```bash
-gh extension install drogers0/gh-image
-```
-
-### Phase 6: Report
-
-Return a manifest of captured files with embeddable URLs (if published):
+Return a manifest of captured files:
 
 ```json
 {
@@ -163,14 +144,14 @@ Return a manifest of captured files with embeddable URLs (if published):
   "duration": "45s",
   "viewport": "desktop",
   "music": "beethoven",
-  "published": true,
-  "upload_method": "gh-image",
-  "embed_urls": {
-    "demo-web.mp4": "https://github.com/user-attachments/assets/UUID",
-    "landing-desktop-web.png": "https://github.com/user-attachments/assets/UUID"
+  "files": {
+    "demo-web.mp4": "docs/media/demo-web.mp4",
+    "landing-desktop-web.png": "docs/media/landing-desktop-web.png"
   }
 }
 ```
+
+**Note:** Publishing to GitHub is handled by the `media-publisher` skill, invoked by the orchestrator (e.g., `create-project-readme`). This skill only captures and returns file paths.
 
 ## Naming Convention
 
@@ -239,7 +220,6 @@ The agent automatically assigns interactions based on content type:
 | Windows | ffmpeg |
 | Linux | ffmpeg |
 | Stitching | ffmpeg (concat demuxer, H.264 encoding, audio overlay) |
-| Publish | `gh` CLI + `gh-image` (for inline video) |
 
 If a dependency is missing, the skill should inform the user and offer installation instructions.
 
