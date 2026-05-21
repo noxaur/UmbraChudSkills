@@ -42,13 +42,22 @@ For multi-platform projects (e.g., React Native + web admin, Electron cross-plat
   platform: "web",
   url: "http://localhost:3000",
   scenes: [
-    { path: "/", name: "landing", effects: ["zoom-in", "pan-down"] },
-    { path: "/dashboard", name: "dashboard", effects: ["pan-across"] },
-    { path: "/signup", name: "signup", effects: ["ease-in-out"] }
+    { path: "/", name: "landing", interactions: [
+        { type: "wait", duration: 2000 },
+        { type: "scroll", delta: 300 }
+      ]},
+    { path: "/dashboard", name: "dashboard", interactions: [
+        { type: "click", selector: "[data-testid='chart']" },
+        { type: "wait", duration: 1000 }
+      ]},
+    { path: "/signup", name: "signup", interactions: [
+        { type: "fill", selector: "#email", value: "demo@example.com" },
+        { type: "click", selector: "button[type='submit']" }
+      ]}
   ],
-  transitions: ["fade", "zoom", "fade"],
   output: "docs/media/demo-{platform}.mp4",
-  viewport: "desktop"  // or "mobile" for web
+  viewport: "desktop",  // or "mobile" for web
+  music: "jazz"         // beethoven, jazz, lofi, ambient, none, or direct file path
 }
 ```
 
@@ -68,8 +77,11 @@ Run the platform-specific capture script with the generated config.
 **Web** (`capture-web.js`):
 - Start dev server in background
 - Launch Playwright Chromium
-- Navigate to each scene, capture raw clips
-- Apply interaction steps (clicks, fills, navigations)
+- For each scene: create a new browser context with `recordVideo` enabled
+- Navigate to each scene, perform interactions, record the actual browser viewport
+- Video size is explicitly set to match viewport (H.264 even dimensions enforced: 1280x720 desktop, 376x812 mobile)
+- Capture screenshots alongside for gallery/README embedding
+- All clips are stitched with ffmpeg concat demuxer (preserves native resolution, no zoompan distortion)
 
 **iOS** (`capture-ios.sh`):
 - Launch app in Simulator or on connected device
@@ -98,34 +110,27 @@ Run the platform-specific capture script with the generated config.
 
 ### Phase 4: Animate & Stitch
 
-Run `animate.js` to post-process all captured clips:
+Post-process all captured clips:
 
-1. **Apply per-scene effects**:
-   - `zoom-in` — gradual zoom to focus on key element
-   - `zoom-out` — zoom out to show full context
-   - `pan-down` — vertical pan (scrolling lists, dashboards)
-   - `pan-across` — horizontal pan (wide content, tables)
-   - `ken-burns` — slow pan + zoom combo for static scenes
-   - `ease-in-out` — smoothed interaction timing
+1. **Stitch recorded clips** — concatenate all scene videos using ffmpeg concat demuxer
+   - Native resolution preserved (no zoompan distortion from still images)
+   - Each scene's actual browser viewport is recorded as video
+   - Transitions are direct cuts (smooth crossfades can be added via ffmpeg if needed)
 
-2. **Add transitions between scenes**:
-   - `fade` — soft crossfade (default for professional)
-   - `slide` — directional slide (energetic)
-   - `zoom` — zoom transition between scenes
+2. **Add background music** — overlay music track at 15% volume
+   - Music file search: checks local `music/` dir first, then global `~/.config/opencode/skills/record-app/music/`
+   - If music file not found, skip audio with warning
+   - Music is looped/cropped to match video duration, fades in/out over 2s
 
-3. **Stitch into single video** — concatenate all processed scenes with transitions
-4. **Add background music** — overlay smooth jazz track at 15% volume (ask user for genre preference; default: jazz)
-5. **Delete raw clips** — only the final animated video is kept
-6. **Output** — single `.mp4` file (H.264, high quality, original aspect ratio preserved) in `docs/media/`
+3. **Re-encode to H.264** — final output as MP4 with:
+   - CRF 18 (high quality)
+   - `yuv420p` pixel format (maximum compatibility)
+   - `movflags +faststart` (web-friendly)
+   - **H.264 even dimensions enforced**: desktop 1280x720, mobile 376x812
 
-**Encoding rules:**
-- Format: MP4 (H.264 codec, compatible with GitHub)
-- CRF: 18 (high quality)
-- Aspect ratio: preserve original — use `scale=-2:height` or `scale=width:-2` to maintain even dimensions
-- **H.264 requires even dimensions** — if captured dimensions are odd (e.g., 375x812), round up to even (376x812)
-- Audio: AAC, 192kbps — only if music file exists, skip with warning if missing
-- Never stretch or squash — always pad with black bars if needed
-- Clean up old `.webm` files after successful `.mp4` creation
+4. **Create gallery images** — resize screenshots to 1200px width for README embedding
+
+5. **Clean up** — delete raw `.webm` clips, remove `.concat-list.txt`, keep only final `.mp4` and gallery `.png` files
 
 ### Phase 5: Publish
 
@@ -202,18 +207,18 @@ docs/media/
 - Quality: high quality, minimal compression
 - If resize tool unavailable, save original with warning
 
-## Auto-Assigned Effects
+## Auto-Assigned Interactions
 
-The agent automatically assigns effects based on content type:
+The agent automatically assigns interactions based on content type:
 
-| Content Type | Default Effects |
-|--------------|-----------------|
-| Landing / hero section | `zoom-in` → `pan-down` |
-| Dashboard / data view | `pan-across` → `zoom-in` on key metric |
-| Form / signup flow | `ease-in-out` on each interaction |
-| List / feed | `pan-down` (scrolling effect) |
-| Settings / config | `zoom-in` on key toggle |
-| Ending / CTA | `zoom-out` → `fade` |
+| Content Type | Default Interactions |
+|--------------|---------------------|
+| Landing / hero section | `wait` (2s) → `scroll` (show below fold) |
+| Dashboard / data view | `click` (key metric) → `wait` (1s) |
+| Form / signup flow | `fill` (email) → `fill` (password) → `click` (submit) |
+| List / feed | `scroll` (multiple times) |
+| Settings / config | `click` (key toggle) → `wait` (1s) |
+| Ending / CTA | `wait` (3s, let viewer absorb) |
 
 ## Guidelines
 
@@ -228,14 +233,13 @@ The agent automatically assigns effects based on content type:
 
 | Platform | Required Tools |
 |----------|---------------|
-| Web | Playwright (chromium) |
+| Web | Playwright (chromium), ffmpeg (for stitching) |
 | iOS | Xcode CLI tools (`xcrun`) |
 | Android | `adb` (Android SDK) |
 | macOS | Built-in (`screencapture`, AppleScript) |
 | Windows | ffmpeg |
 | Linux | ffmpeg |
-| Animations | ffmpeg (all platforms) |
-| Music | ffmpeg (audio overlay) |
+| Stitching | ffmpeg (concat demuxer, H.264 encoding, audio overlay) |
 | Publish | `gh` CLI + `gh-image` (for inline video) |
 
 If a dependency is missing, the skill should inform the user and offer installation instructions.
@@ -257,3 +261,15 @@ If a dependency is missing, the skill should inform the user and offer installat
 | `beethoven-sonata-1.mp3` | Sonata No. 1 in F Minor, Op. 2 No. 1 — IV. Prestissimo | ~4 min |
 | `beethoven-sonata-15.mp3` | Sonata No. 15 in D Major, Op. 28 "Pastoral" — IV. Rondo | ~6 min |
 | `beethoven-sonata-22.mp3` | Sonata No. 22 in F Major, Op. 54 — II. Allegretto | ~8 min |
+| `smooth-jazz.mp3` | Smooth jazz background track | varies |
+| `lofi-beat.mp3` | Lo-fi hip hop beat | varies |
+| `ambient.mp3` | Ambient soundscape | varies |
+
+### Music File Resolution
+
+The script searches for music files in this order:
+1. Local: `<skill-dir>/music/<filename>`
+2. Global: `~/.config/opencode/skills/record-app/music/<filename>`
+3. If a direct file path is provided in config, uses that directly
+
+If no music file is found, audio is skipped with a warning.
