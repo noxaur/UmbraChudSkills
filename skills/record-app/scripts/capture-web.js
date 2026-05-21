@@ -36,9 +36,6 @@ function getViewportConfig(viewport) {
 function getMusicFile(genre) {
   const files = {
     beethoven: 'beethoven-sonata-32.mp3',
-    jazz: 'smooth-jazz.mp3',
-    lofi: 'lofi-beat.mp3',
-    ambient: 'ambient.mp3',
   };
   const filename = files[genre] || files.beethoven;
   const localDir = path.join(__dirname, '..', 'music');
@@ -60,7 +57,7 @@ function findMusicFile(music) {
   // Look up by genre
   const result = getMusicFile(music);
   if (!result) {
-    console.warn(`Music file for '${music}' not found; skipping audio. Available: beethoven`);
+    console.warn(`Music file for '${music}' not found; skipping audio.`);
   }
   return result;
 }
@@ -275,7 +272,7 @@ function buildStitchCommand(clipPaths, output, vp, musicFile, durationPerScene) 
   // Multiple clips: concat then re-encode
   // Create a concat file list
   const concatFile = path.join(path.dirname(output), '.concat-list.txt');
-  const concatContent = clipPaths.map(p => `file '${p.replace(/'/g, "'\\''")}'`).join('\n');
+  const concatContent = clipPaths.map(p => `file '${p.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`).join('\n');
   fs.writeFileSync(concatFile, concatContent);
 
   let audioPart = '';
