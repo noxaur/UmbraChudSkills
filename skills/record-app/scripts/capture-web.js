@@ -69,7 +69,7 @@ async function main() {
   }
 
   const config = JSON.parse(fs.readFileSync(configFile, 'utf-8'));
-  const { url, scenes, output, viewport = 'desktop', music = 'jazz' } = config;
+  const { url, scenes, output, viewport = 'desktop', music = 'none' } = config;
 
   const vp = getViewportConfig(viewport);
   const outputDir = path.dirname(output);
@@ -160,13 +160,16 @@ async function main() {
 
   // Create gallery versions at 1200px width
   console.log('\nCreating gallery versions...');
-  const screenshotPattern = path.join(outputDir, `*-${viewport}-web.png`);
+  const screenshotPattern = `-${viewport}-web.png`;
+  let screenshots = [];
   try {
-    const screenshots = execSync(`ls ${screenshotPattern} 2>/dev/null`, { encoding: 'utf-8' })
-      .trim()
-      .split('\n')
-      .filter(Boolean);
-    for (const screenshotPath of screenshots) {
+    screenshots = fs.readdirSync(outputDir)
+      .filter(f => f.endsWith(screenshotPattern) && !f.includes('-gallery'))
+      .map(f => path.join(outputDir, f));
+  } catch {
+    // outputDir may not exist
+  }
+  for (const screenshotPath of screenshots) {
       const galleryPath = screenshotPath.replace('.png', '-gallery.png');
       try {
         execSync(`sips -Z 1200 "${screenshotPath}" --out "${galleryPath}" 2>/dev/null`, { stdio: 'pipe' });
@@ -238,7 +241,7 @@ async function performInteraction(page, action) {
       await page.waitForTimeout(500);
       break;
     case 'scroll':
-      await page.evaluate((y) => window.scrollBy(0, y), action.delta || 300);
+      await page.evaluate((delta) => window.scrollBy(0, delta), action.delta || 300);
       await page.waitForTimeout(500);
       break;
     case 'wait':
@@ -260,15 +263,15 @@ function buildStitchCommand(clipPaths, output, vp, musicFile, durationPerScene) 
     let audioPart = '';
     if (musicFile) {
       audioPart = `-stream_loop -1 -i "${musicFile}" -filter_complex "[1:a]volume=0.15,afade=t=in:st=0:d=2,afade=t=out:st=${durationPerScene - 2}:d=2[aout]" -map "[aout]" -c:a aac -b:a 192k`;
-      return `ffmpeg -y -i "${clipPaths[0]}" ${audioPart} -map 0:v -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart "${output}"`;
+      return `ffmpeg -y -i "${clipPaths[0]}" ${audioPart} -map 0:v -c:v libx264 -crf 18 -tune animation -pix_fmt yuv420p -movflags +faststart "${output}"`;
     }
-    return `ffmpeg -y -i "${clipPaths[0]}" -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart "${output}"`;
+    return `ffmpeg -y -i "${clipPaths[0]}" -c:v libx264 -crf 18 -tune animation -pix_fmt yuv420p -movflags +faststart "${output}"`;
   }
 
   // Multiple clips: concat then re-encode
   // Create a concat file list
   const concatFile = path.join(path.dirname(output), '.concat-list.txt');
-  const concatContent = clipPaths.map(p => `file '${p}'`).join('\n');
+  const concatContent = clipPaths.map(p => `file '${p.replace(/'/g, "'\\''")}'`).join('\n');
   fs.writeFileSync(concatFile, concatContent);
 
   let audioPart = '';
@@ -278,7 +281,7 @@ function buildStitchCommand(clipPaths, output, vp, musicFile, durationPerScene) 
     audioPart = `-stream_loop -1 -i "${musicFile}" -filter_complex "[1:a]volume=0.15,afade=t=in:st=0:d=2,afade=t=out:st=${totalDuration - 2}:d=2[aout]" -map "[aout]" -c:a aac -b:a 192k`;
   }
 
-  return `ffmpeg -y -f concat -safe 0 -i "${concatFile}" ${audioPart} -map 0:v -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart "${output}"`;
+  return `ffmpeg -y -f concat -safe 0 -i "${concatFile}" ${audioPart} -map 0:v -c:v libx264 -crf 18 -tune animation -pix_fmt yuv420p -movflags +faststart "${output}"`;
 }
 
 main().catch(err => {

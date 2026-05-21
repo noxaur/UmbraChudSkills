@@ -172,21 +172,12 @@ docs/media/
 
 ## Gallery Output
 
-In addition to the demo video, individual screenshots are saved and resized for gallery embedding:
-
-```
-docs/media/
-├── landing-desktop-web.png    # Resized to 1200px width
-├── dashboard-desktop-web.png  # Resized to 1200px width
-├── settings-desktop-web.png   # Resized to 1200px width
-├── home-screen-ios.png        # Resized to 1200px width
-└── ...
-```
+In addition to the demo video, individual screenshots are captured at full resolution and resized copies are created for gallery embedding:
 
 **Resize rules:**
 - Max width: 1200px (maintains aspect ratio)
 - Format: PNG (lossless)
-- Quality: high quality, minimal compression
+- Gallery copies use `-gallery` suffix (e.g., `landing-desktop-web-gallery.png`)
 - If resize tool unavailable, save original with warning
 
 ## Auto-Assigned Interactions
