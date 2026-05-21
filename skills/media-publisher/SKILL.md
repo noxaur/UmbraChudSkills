@@ -25,6 +25,7 @@ The skill auto-detects the best available upload method:
 | Method | CLI Tool | Inline Video | Setup |
 |--------|----------|--------------|-------|
 | **user-attachments** | `gh-image` | Yes | `gh extension install drogers0/gh-image` |
+| **Release assets** | `gh-attach` | No (clickable) | `gh extension install Addono/gh-attach` |
 | **Release assets** | `gitshot` via `gh shot` | No (clickable) | `gh extension install vipulgupta2048/gitshot` |
 | **Release assets** | `gh release` | No (clickable) | Built-in, no install needed |
 
@@ -39,7 +40,7 @@ gh extension install drogers0/gh-image
 
 1. Verify `docs/media/` exists and contains files
 2. Check `gh` CLI is installed and authenticated
-3. Detect best upload method (gh-image → gitshot → releases)
+3. Detect best upload method (gh-image → gitshot → gh-attach → releases)
 4. Count files to publish
 
 ### Phase 2: Upload
@@ -48,6 +49,7 @@ Upload all files using the detected method:
 
 - **gh-image**: Reads browser cookies, uploads to `user-attachments` endpoint
 - **gitshot**: Creates dedicated public repo, uploads as Release assets
+- **gh-attach**: Uploads to `media-vN` release via `gh attach upload --strategy release-asset`
 - **releases**: Creates `media-vN` release, uploads as Release assets
 
 ### Phase 3: Manifest
@@ -120,13 +122,13 @@ gh extension install drogers0/gh-image
 
 Reads browser cookies, uploads to `user-attachments` endpoint. Requires active browser session with GitHub.
 
-### gh-attach (alternative — inline video, not auto-detected)
+### gh-attach (alternative — Release assets)
 
 ```bash
 gh extension install Addono/gh-attach
 ```
 
-Uses browser automation (playwright). Requires active browser session with GitHub. Not auto-detected by the script — invoke manually if configured.
+Auto-detected when installed. Uploads as Release assets (clickable thumbnails, no inline video). Uses `--strategy release-asset` to upload to the shared `media-vN` release tag.
 
 ### gitshot (zero-config — clickable only)
 

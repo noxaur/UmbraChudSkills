@@ -57,7 +57,12 @@ if gh extension list 2>/dev/null | grep -q "gh-image"; then
 elif command -v gitshot &> /dev/null || (gh extension list 2>/dev/null | grep -q "gitshot"); then
   UPLOAD_METHOD="gitshot"
   echo "Using: gitshot (Release assets — clickable thumbnails)"
-# Method 3: GitHub Releases (official API, no inline video)
+# Method 3: gh-attach (uses Addono/gh-attach extension for Release assets)
+elif command -v gh-attach &> /dev/null || (gh extension list 2>/dev/null | grep -q "gh-attach"); then
+  UPLOAD_METHOD="gh-attach"
+  echo "Using: gh-attach (Release assets — clickable thumbnails)"
+  echo "Tip: Install gh-image for inline video: gh extension install drogers0/gh-image"
+# Method 4: GitHub Releases (official API, no inline video)
 else
   UPLOAD_METHOD="releases"
   echo "Using: GitHub Releases (official API — clickable thumbnails, no inline video)"
@@ -69,6 +74,20 @@ echo ""
 FAILED=0
 SUCCESS=0
 declare -A URLS_MAP
+
+# Find/create shared release tag for gh-attach and releases methods
+find_release_tag() {
+  local tag
+  tag=$(gh release list --limit 30 --json tagName -q '.[].tagName' 2>/dev/null | grep '^media-v' | sort -V | tail -1 || echo "")
+  if [ -z "$tag" ]; then
+    tag="media-v1"
+    gh release create "$tag" \
+      --title "Media Assets v1" \
+      --notes "Cumulative media assets for $REPO_FULL" \
+      2>/dev/null || true
+  fi
+  echo "$tag"
+}
 
 # Upload files based on method
 echo "Uploading $FILE_COUNT files..."
@@ -99,18 +118,16 @@ for file in "$MEDIA_DIR"/*; do
       asset_url="$output"
       ;;
 
-    releases)
-      # Find latest media-vN release; reuse it to avoid tag pollution
-      LATEST_TAG=$(gh release list --limit 30 --json tagName -q '.[].tagName' 2>/dev/null | grep '^media-v' | sort -V | tail -1 || echo "")
-
-      if [ -z "$LATEST_TAG" ]; then
-        LATEST_TAG="media-v1"
-        gh release create "$LATEST_TAG" \
-          --title "Media Assets v1" \
-          --notes "Cumulative media assets for $REPO_FULL" \
-          2>/dev/null || true
+    gh-attach)
+      LATEST_TAG=$(find_release_tag)
+      output=$(gh attach upload --strategy release-asset --target "$LATEST_TAG" --format url "$file" 2>/dev/null) || true
+      if [ -n "$output" ]; then
+        asset_url="$output"
       fi
+      ;;
 
+    releases)
+      LATEST_TAG=$(find_release_tag)
       # Upload file to the existing/latest release (--clobber overwrites duplicates)
       if gh release upload "$LATEST_TAG" "$file" --clobber 2>/dev/null; then
         asset_url="$REPO_URL/releases/download/$LATEST_TAG/$filename"
