@@ -104,10 +104,13 @@ Default media-dir: `docs/media`
 ### Gallery Grid
 
 ```markdown
-| Landing | Dashboard | Settings |
-|---------|-----------|----------|
-| [![Landing](URL1)](URL1) | [![Dashboard](URL2)](URL2) | [![Settings](URL3)](URL3) |
+| | |
+|---|---|
+| [![Landing](URL1)](URL1) | [![Dashboard](URL2)](URL2) |
+| *Landing page* | *Dashboard view* |
 ```
+
+2-column table with captions below each image. For 3+ images per row, adjust column count accordingly.
 
 ## Install Upload Tools
 
