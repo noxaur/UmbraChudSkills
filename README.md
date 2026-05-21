@@ -135,3 +135,5 @@ agents/
 ## License
 
 MIT
+
+Note: You will receive updates when new media is published.
