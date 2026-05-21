@@ -92,12 +92,14 @@ Check for `docs/media/media-manifest.json` (created by `media-publisher`):
 
 **If manifest exists:**
 - Read all asset URLs from the manifest
-- Use GitHub Release URLs for all embeds
-- These URLs support inline video playback and full-resolution image viewing
+- Check URL type:
+  - **user-attachments URLs** → Use `<video>` tags for inline playback
+  - **Release URLs** → Use clickable badges (no inline video)
+- Images always use `[![Name](URL)](URL)` format (clickable, full resolution)
 
 **If manifest does NOT exist:**
 - Fall back to local paths (`docs/media/...`)
-- Note in README: "Run `record-app` and publish to GitHub Releases to enable inline media"
+- Note in README: "Run `record-app` and publish to GitHub to enable inline media"
 
 ### Phase 4: Generate Media Gallery
 
@@ -204,23 +206,31 @@ This project is licensed under the [LICENSE] License.
 - **Keep it concise** — no section should exceed what's necessary.
 - **No emojis overload** — use sparingly for visual breaks.
 - **No LICENSE/CONTRIBUTING/CHANGELOG sections** — reference the separate files.
-- **Always prefer release URLs** from `media-manifest.json` over local paths.
+- **Always prefer URLs** from `media-manifest.json` over local paths.
 - **If logo/icon exists** — use it in the header.
 - **Match project tone** — formal for enterprise, casual for open source.
 - **Always ask about media preferences** before capturing.
 
 ## Media Embedding
 
-### Video (inline playback via GitHub Releases)
+### Video with user-attachments URL (inline playback in README)
 
 ```html
-<video src="https://github.com/owner/repo/releases/download/media-v2/demo-web.mp4" controls width="640"></video>
+<video src="https://github.com/user-attachments/assets/UUID" controls width="640"></video>
 ```
+
+### Video with Release URL (clickable badge — no inline playback)
+
+```markdown
+[![Play Video](https://img.shields.io/badge/▶-Play-blue?style=for-the-badge)](https://github.com/owner/repo/releases/download/media-v2/demo-web.mp4)
+```
+
+**Important:** GitHub README only renders `<video>` tags with `user-attachments` URLs. Release URLs show as clickable links only.
 
 ### Image (clickable, opens full resolution)
 
 ```markdown
-[![Landing Page](https://github.com/owner/repo/releases/download/media-v2/landing-desktop-web.png)](https://github.com/owner/repo/releases/download/media-v2/landing-desktop-web.png)
+[![Landing Page](https://github.com/user-attachments/assets/UUID)](https://github.com/user-attachments/assets/UUID)
 ```
 
 ### Gallery (2-column table with clickable images)
@@ -228,7 +238,7 @@ This project is licensed under the [LICENSE] License.
 ```markdown
 | | |
 |---|---|
-| [![Scene 1](RELEASE_URL/scene1.png)](RELEASE_URL/scene1.png) | [![Scene 2](RELEASE_URL/scene2.png)](RELEASE_URL/scene2.png) |
+| [![Scene 1](URL/scene1.png)](URL/scene1.png) | [![Scene 2](URL/scene2.png)](URL/scene2.png) |
 | *Caption 1* | *Caption 2* |
 ```
 
@@ -238,21 +248,19 @@ This project is licensed under the [LICENSE] License.
 ## Demo
 
 ### Web
-<video src="RELEASE_URL/demo-web.mp4" controls width="640"></video>
+<video src="URL/demo-web.mp4" controls width="640"></video>
 
 ### iOS
-<video src="RELEASE_URL/demo-ios.mp4" controls width="640"></video>
+<video src="URL/demo-ios.mp4" controls width="640"></video>
 
 ### Android
-<video src="RELEASE_URL/demo-android.mp4" controls width="640"></video>
+<video src="URL/demo-android.mp4" controls width="640"></video>
 ```
 
-### Fallback (no release URLs available)
+### Fallback (no published URLs available)
 
-If `media-manifest.json` doesn't exist, use local paths:
+If `media-manifest.json` doesn't exist, use local paths with a note:
 
-```html
-<video src="docs/media/demo-web.mp4" controls width="640"></video>
+```markdown
+> 📹 Run `record-app` and publish media to enable inline video playback.
 ```
-
-Add a note: "Publish media to GitHub Releases for inline playback."

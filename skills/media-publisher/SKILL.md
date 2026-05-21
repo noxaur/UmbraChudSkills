@@ -1,18 +1,38 @@
 ---
 name: media-publisher
-description: Publish media assets (images, videos, GIFs) to GitHub Releases for inline embedding in README. Creates cumulative versioned releases (media-v1, media-v2, ...) with all files from docs/media/. Use when asked to publish media, upload assets to GitHub, generate embeddable URLs, or embed videos/images in README.
+description: Publish media assets (images, videos, GIFs) to GitHub for inline embedding in README. Uploads to user-attachments for inline video playback, or falls back to GitHub Releases. Use when asked to publish media, upload assets to GitHub, generate embeddable URLs, or embed videos/images in README.
 license: MIT
 ---
 
 # Media Publisher
 
-Publish captured media to GitHub Releases for inline playback and clickable enlargement in README files.
+Publish captured media to GitHub for inline playback and clickable enlargement in README files.
 
 ## How It Works
 
-GitHub Releases assets are served with correct `Content-Type` headers, enabling:
-- **Video inline playback**: `<video src="..." controls width="640"></video>`
-- **Image inline display + click to enlarge**: `[![Name](URL)](URL)`
+GitHub README supports inline video playback **only** with `user-attachments` URLs:
+
+```html
+<video src="https://github.com/user-attachments/assets/UUID" controls width="640"></video>
+```
+
+These URLs come from GitHub's internal upload endpoint — the same one used by drag-and-drop in the web UI. GitHub Releases URLs do **not** render inline video in READMEs.
+
+## Upload Methods
+
+The skill auto-detects the best available upload method:
+
+| Method | CLI Tool | Inline Video | Setup |
+|--------|----------|--------------|-------|
+| **user-attachments** | `gh-image` | Yes | `gh extension install drogers0/gh-image` |
+| **user-attachments** | `gh-attach` | Yes | `gh extension install Addono/gh-attach` |
+| **Release assets** | `gitshot` | No (clickable) | `gh extension install vipulgupta2048/gitshot` |
+| **Release assets** | `gh release` | No (clickable) | Built-in, no install needed |
+
+**Recommended:** Install `gh-image` for inline video support:
+```bash
+gh extension install drogers0/gh-image
+```
 
 ## Workflow
 
@@ -20,42 +40,38 @@ GitHub Releases assets are served with correct `Content-Type` headers, enabling:
 
 1. Verify `docs/media/` exists and contains files
 2. Check `gh` CLI is installed and authenticated
-3. Count files to publish
+3. Detect best upload method (gh-image → gh-attach → gitshot → releases)
+4. Count files to publish
 
-### Phase 2: Version
+### Phase 2: Upload
 
-1. Find latest `media-vN` release via `gh release list`
-2. Increment to `media-v(N+1)` (starts at `media-v1`)
-3. Create new release with `gh release create`
+Upload all files using the detected method:
 
-### Phase 3: Upload
+- **gh-image**: Reads browser cookies, uploads to `user-attachments` endpoint
+- **gh-attach**: Browser automation via playwright, uploads to `user-attachments`
+- **gitshot**: Creates dedicated public repo, uploads as Release assets
+- **releases**: Creates `media-vN` release, uploads as Release assets
 
-1. Upload ALL files from `docs/media/` (cumulative)
-2. Use `--clobber` to replace assets with same name
-3. Track successful and failed uploads
-4. Generate direct download URLs: `https://github.com/owner/repo/releases/download/media-vN/filename.ext`
-
-### Phase 4: Manifest
+### Phase 3: Manifest
 
 Save `docs/media/media-manifest.json`:
 ```json
 {
-  "version": 2,
-  "tag": "media-v2",
+  "upload_method": "gh-image",
   "repo": "owner/repo",
-  "release_url": "https://github.com/owner/repo/releases/tag/media-v2",
   "assets": {
-    "demo-web.mp4": "https://github.com/owner/repo/releases/download/media-v2/demo-web.mp4",
-    "landing-desktop-web.png": "https://github.com/owner/repo/releases/download/media-v2/landing-desktop-web.png"
+    "demo-web.mp4": "https://github.com/user-attachments/assets/UUID",
+    "landing-desktop-web.png": "https://github.com/user-attachments/assets/UUID"
   }
 }
 ```
 
-### Phase 5: Report
+### Phase 4: Report
 
 Print embeddable snippets:
-- Videos: `<video src="URL" controls width="640"></video>`
-- Images: `[![Name](URL)](URL)` — thumbnail inline, click opens full res
+- **user-attachments URLs**: `<video src="..." controls width="640"></video>` (inline playback)
+- **Release URLs**: `[![Play](badge)](URL)` (clickable link)
+- **Images**: `[![Name](URL)](URL)` (clickable, opens full res)
 
 ## Usage
 
@@ -67,16 +83,22 @@ Default media-dir: `docs/media`
 
 ## Embedding Guide
 
-### Video (inline playback)
+### Video with user-attachments URL (inline playback)
 
 ```html
-<video src="https://github.com/owner/repo/releases/download/media-v2/demo-web.mp4" controls width="640"></video>
+<video src="https://github.com/user-attachments/assets/UUID" controls width="640"></video>
+```
+
+### Video with Release URL (clickable badge)
+
+```markdown
+[![Play Video](https://img.shields.io/badge/▶-Play-blue?style=for-the-badge)](https://github.com/owner/repo/releases/download/media-v1/demo.mp4)
 ```
 
 ### Image (inline + clickable)
 
 ```markdown
-[![Landing Page](https://github.com/owner/repo/releases/download/media-v2/landing-desktop-web.png)](https://github.com/owner/repo/releases/download/media-v2/landing-desktop-web.png)
+[![Landing Page](https://github.com/user-attachments/assets/UUID)](https://github.com/user-attachments/assets/UUID)
 ```
 
 ### Gallery Grid
@@ -87,12 +109,31 @@ Default media-dir: `docs/media`
 | [![Landing](URL1)](URL1) | [![Dashboard](URL2)](URL2) | [![Settings](URL3)](URL3) |
 ```
 
-## Release Strategy
+## Install Upload Tools
 
-- **Cumulative**: Each release contains ALL media files, not just new ones
-- **Versioned**: `media-v1`, `media-v2`, etc. — history is preserved
-- **Per-repo**: Tags are scoped to the repository
-- **Idempotent**: `--clobber` replaces assets with same name
+### gh-image (recommended — inline video)
+
+```bash
+gh extension install drogers0/gh-image
+```
+
+Reads browser cookies, uploads to `user-attachments` endpoint. Requires active browser session with GitHub.
+
+### gh-attach (alternative — inline video)
+
+```bash
+gh extension install Addono/gh-attach
+```
+
+Uses browser automation (playwright). More reliable but slower.
+
+### gitshot (zero-config — clickable only)
+
+```bash
+gh extension install vipulgupta2048/gitshot
+```
+
+Auto-creates a public `gitshot-images` repo. No browser needed.
 
 ## Dependencies
 
@@ -100,12 +141,13 @@ Default media-dir: `docs/media`
 |------|----------|---------|
 | `gh` CLI | Yes | `brew install gh` |
 | GitHub auth | Yes | `gh auth login` |
+| `gh-image` | Recommended | `gh extension install drogers0/gh-image` |
 | `docs/media/` | Yes | Created by `record-app` |
 
 ## Edge Cases
 
-- **No `gh` CLI**: Inform user, skip publish
+- **No upload tool available**: Falls back to GitHub Releases (official API)
 - **Not authenticated**: Run `gh auth login`
 - **Empty media dir**: Warn, skip
 - **Upload fails for one file**: Continue with others, report failures
-- **Release already exists**: Use `--clobber` to update assets
+- **Private repos**: user-attachments URLs inherit repo visibility (stay private)
