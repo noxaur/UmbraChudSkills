@@ -81,9 +81,21 @@ Verify:
 - Audio track exists if music was added
 - File plays without errors
 
-### Phase 5: Report
+### Phase 5: Publish
 
-Return summary of edits made:
+After editing, copy edited files into `docs/media/` (alongside originals) and publish to GitHub Releases:
+
+1. Copy edited output to `docs/media/` (preserve originals, use descriptive names like `demo-web-edited.mp4`)
+2. Run `./skills/media-publisher/scripts/publish-media.sh docs/media`
+3. This creates a new cumulative release (`media-vN+1`) with all files including edits
+4. Saves updated `docs/media/media-manifest.json` with new URLs
+5. Ask user: "Publish edited media to GitHub Releases?" (default: yes if `gh` available)
+
+If `gh` is not available, skip this phase and inform the user.
+
+### Phase 6: Report
+
+Return summary of edits made with publish status:
 ```json
 {
   "source": "docs/media/demo-web.mp4",
@@ -91,7 +103,10 @@ Return summary of edits made:
   "edits": ["trimmed 0:00-0:30", "added jazz music", "color corrected"],
   "duration": "30s",
   "resolution": "1280x720",
-  "music": "smooth-jazz.mp3 (15% volume)"
+  "music": "smooth-jazz.mp3 (15% volume)",
+  "published": true,
+  "release_tag": "media-v2",
+  "asset_url": "https://github.com/owner/repo/releases/download/media-v2/demo-web-edited.mp4"
 }
 ```
 

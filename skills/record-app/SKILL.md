@@ -120,9 +120,21 @@ Run `animate.js` to post-process all captured clips:
 - Audio: AAC, 192kbps
 - Never stretch or squash — always pad with black bars if needed
 
-### Phase 5: Report
+### Phase 5: Publish
 
-Return a manifest of captured files:
+Run `publish-media.sh` from the `media-publisher` skill to upload all media to GitHub Releases:
+
+1. Check `gh` CLI is available and authenticated
+2. Run `./skills/media-publisher/scripts/publish-media.sh docs/media`
+3. This creates a cumulative versioned release (`media-v1`, `media-v2`, ...)
+4. Saves `docs/media/media-manifest.json` with asset URLs
+5. Ask user: "Publish media to GitHub Releases for inline embedding?" (default: yes if `gh` available)
+
+If `gh` is not available, skip this phase and inform the user.
+
+### Phase 6: Report
+
+Return a manifest of captured files with embeddable URLs (if published):
 
 ```json
 {
@@ -131,7 +143,14 @@ Return a manifest of captured files:
   "scenes": ["landing", "dashboard", "signup"],
   "duration": "45s",
   "viewport": "desktop",
-  "music": "jazz"
+  "music": "jazz",
+  "published": true,
+  "release_tag": "media-v1",
+  "release_url": "https://github.com/owner/repo/releases/tag/media-v1",
+  "embed_urls": {
+    "demo-web.mp4": "https://github.com/owner/repo/releases/download/media-v1/demo-web.mp4",
+    "landing-desktop-web.png": "https://github.com/owner/repo/releases/download/media-v1/landing-desktop-web.png"
+  }
 }
 ```
 
@@ -203,6 +222,7 @@ The agent automatically assigns effects based on content type:
 | Linux | ffmpeg |
 | Animations | ffmpeg (all platforms) |
 | Music | ffmpeg (audio overlay) |
+| Publish | `gh` CLI (GitHub Releases) |
 
 If a dependency is missing, the skill should inform the user and offer installation instructions.
 

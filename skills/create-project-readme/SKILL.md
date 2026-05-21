@@ -1,12 +1,12 @@
 ---
 name: create-project-readme
-description: Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Automatically captures visual media via the record-app skill for any platform (web, iOS, Android, macOS, Windows, Linux). Use when asked to create a readme, document a project, generate project documentation, or write a README.md.
+description: Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Automatically captures visual media via the record-app skill for any platform (web, iOS, Android, macOS, Windows, Linux). Uses GitHub Releases asset URLs for inline video playback and clickable image enlargement. Use when asked to create a readme, document a project, generate project documentation, or write a README.md.
 license: MIT
 ---
 
 # Create Project README
 
-Analyze a codebase, capture visual media, and generate a comprehensive, well-structured README.md.
+Analyze a codebase, capture visual media, publish to GitHub Releases, and generate a comprehensive README.md with inline video playback and clickable images.
 
 ## Workflow
 
@@ -66,7 +66,8 @@ Great! A few options:
   - Start the dev server
   - Navigate to key pages
   - Capture screenshots, apply smooth animations, and stitch into a demo video
-  - Save to `docs/media/demo-web.webm` (and `demo-web-mobile.webm` for mobile viewport)
+  - Save to `docs/media/demo-web.mp4` (and `demo-web-mobile.mp4` for mobile viewport)
+  - Publish to GitHub Releases via `media-publisher` skill
 
 **If the project is a native application** (iOS, Android, macOS, Windows, Linux):
 - Invoke the `record-app` skill to capture media.
@@ -74,7 +75,8 @@ Great! A few options:
   - Detect the platform and launch the app
   - Capture key screens with smooth animations
   - Stitch into a demo video per platform
-  - Save to `docs/media/demo-{platform}.webm`
+  - Save to `docs/media/demo-{platform}.mp4`
+  - Publish to GitHub Releases via `media-publisher` skill
 
 **If the project has no UI** (CLI tool, library, API-only):
 - Skip media capture.
@@ -84,29 +86,43 @@ Great! A few options:
 - Run `record-app` for each selected platform.
 - Embed all demo videos in the README, grouped by platform.
 
-### Phase 3: Generate Media Gallery
+### Phase 3: Resolve Media URLs
 
-Instead of embedding large images inline, create a compact gallery using a 2-column table layout:
+Check for `docs/media/media-manifest.json` (created by `media-publisher`):
+
+**If manifest exists:**
+- Read all asset URLs from the manifest
+- Use GitHub Release URLs for all embeds
+- These URLs support inline video playback and full-resolution image viewing
+
+**If manifest does NOT exist:**
+- Fall back to local paths (`docs/media/...`)
+- Note in README: "Run `record-app` and publish to GitHub Releases to enable inline media"
+
+### Phase 4: Generate Media Gallery
+
+Use release asset URLs for clickable images that open at full resolution:
 
 ```markdown
 ## Screenshots
 
 | | |
 |---|---|
-| ![Landing](docs/media/landing-desktop-web.png) | ![Dashboard](docs/media/dashboard-desktop-web.png) |
+| [![Landing](RELEASE_URL/landing-desktop-web.png?width=400)](RELEASE_URL/landing-desktop-web.png) | [![Dashboard](RELEASE_URL/dashboard-desktop-web.png?width=400)](RELEASE_URL/dashboard-desktop-web.png) |
 | *Landing page* | *Dashboard view* |
-| ![Settings](docs/media/settings-desktop-web.png) | ![Mobile View](docs/media/landing-mobile-web.png) |
+| [![Settings](RELEASE_URL/settings-desktop-web.png?width=400)](RELEASE_URL/settings-desktop-web.png) | [![Mobile View](RELEASE_URL/landing-mobile-web.png?width=400)](RELEASE_URL/landing-mobile-web.png) |
 | *Settings panel* | *Mobile landing* |
 ```
 
 **Rules for the gallery:**
 - Maximum 6 images per platform (pick the most important screens)
-- Resize images to max 400px width before embedding (use `sips` on macOS, `convert` on Linux, or skip if not available)
+- Use release URLs for full-resolution access
 - Each image has a one-line caption below it
 - Group galleries by platform for multi-platform projects
 - If only 1-2 images, skip the table and embed directly
+- Images are clickable — opens full resolution in new tab
 
-### Phase 4: Generate README.md
+### Phase 5: Generate README.md
 
 Create a structured README with these sections:
 
@@ -117,11 +133,11 @@ Create a structured README with these sections:
 
 ## Demo
 
-[Embedded video from docs/media/]
+<video src="RELEASE_URL/demo-web.mp4" controls width="640"></video>
 
 ## Screenshots
 
-[Media gallery table from Phase 3]
+[Media gallery table from Phase 4]
 
 ## Features
 
@@ -188,39 +204,55 @@ This project is licensed under the [LICENSE] License.
 - **Keep it concise** — no section should exceed what's necessary.
 - **No emojis overload** — use sparingly for visual breaks.
 - **No LICENSE/CONTRIBUTING/CHANGELOG sections** — reference the separate files.
-- **Embed media with relative paths** — `docs/media/demo-web.webm`.
+- **Always prefer release URLs** from `media-manifest.json` over local paths.
 - **If logo/icon exists** — use it in the header.
 - **Match project tone** — formal for enterprise, casual for open source.
 - **Always ask about media preferences** before capturing.
 
 ## Media Embedding
 
-For webm videos in GitHub markdown:
+### Video (inline playback via GitHub Releases)
 
-```markdown
-<video src="docs/media/demo-web.webm" controls width="640"></video>
+```html
+<video src="https://github.com/owner/repo/releases/download/media-v2/demo-web.mp4" controls width="640"></video>
 ```
 
-For the media gallery (2-column table):
+### Image (clickable, opens full resolution)
+
+```markdown
+[![Landing Page](https://github.com/owner/repo/releases/download/media-v2/landing-desktop-web.png)](https://github.com/owner/repo/releases/download/media-v2/landing-desktop-web.png)
+```
+
+### Gallery (2-column table with clickable images)
 
 ```markdown
 | | |
 |---|---|
-| ![Scene 1](docs/media/scene1.png) | ![Scene 2](docs/media/scene2.png) |
+| [![Scene 1](RELEASE_URL/scene1.png)](RELEASE_URL/scene1.png) | [![Scene 2](RELEASE_URL/scene2.png)](RELEASE_URL/scene2.png) |
 | *Caption 1* | *Caption 2* |
 ```
 
-For multi-platform projects, group media by platform:
+### Multi-platform (grouped by platform)
 
 ```markdown
 ## Demo
 
 ### Web
-<video src="docs/media/demo-web.webm" controls width="640"></video>
+<video src="RELEASE_URL/demo-web.mp4" controls width="640"></video>
 
 ### iOS
-<video src="docs/media/demo-ios.webm" controls width="640"></video>
+<video src="RELEASE_URL/demo-ios.mp4" controls width="640"></video>
 
 ### Android
-<video src="docs/media/demo-android.webm" controls width="640"></video>
+<video src="RELEASE_URL/demo-android.mp4" controls width="640"></video>
 ```
+
+### Fallback (no release URLs available)
+
+If `media-manifest.json` doesn't exist, use local paths:
+
+```html
+<video src="docs/media/demo-web.mp4" controls width="640"></video>
+```
+
+Add a note: "Publish media to GitHub Releases for inline playback."
