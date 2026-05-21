@@ -21,7 +21,7 @@ Identify the project type by scanning the codebase:
 | **Android** | `build.gradle`, `AndroidManifest.xml`, `app/src/main` | `capture-android.sh` |
 | **macOS** | `.xcodeproj` (macOS target), `.app`, `Info.plist` | `capture-macos.sh` |
 | **Windows** | `.sln`, `.csproj`, `.exe`, `package.json` (Electron) | `capture-windows.ps1` |
-| **Linux** | `Makefile`, `CMakeLists.txt`, `.deb`, ELF binary, `package.json` (Electron) | `capture-linux.sh` |
+| **Linux** | `apt-packages`, `snapcraft.yaml`, `.desktop`, `.deb`, ELF binary, `package.json` (Electron) | `capture-linux.sh` |
 
 For multi-platform projects (e.g., React Native + web admin, Electron cross-platform), run all applicable capture scripts.
 
@@ -115,6 +115,7 @@ Post-process all captured clips:
 1. **Stitch recorded clips** — concatenate all scene videos using ffmpeg concat demuxer
    - Native resolution preserved (no zoompan distortion from still images)
    - Each scene's actual browser viewport is recorded as video
+   - **Constraint**: concat demuxer requires all input clips to share the same resolution, codec, time base, and SAR. This is satisfied because all clips are recorded at the same fixed viewport size.
    - Transitions are direct cuts (smooth crossfades can be added via ffmpeg if needed)
 
 2. **Add background music** — overlay music track at 15% volume
@@ -122,8 +123,9 @@ Post-process all captured clips:
    - If music file not found, skip audio with warning
    - Music is looped/cropped to match video duration, fades in/out over 2s
 
-3. **Re-encode to H.264** — final output as MP4 with:
+3. **Re-encode to H.264** — Playwright records to WebM; re-encode to MP4 for GitHub compatibility:
    - CRF 18 (high quality)
+   - `-tune animation` (optimized for UI/screen recording content)
    - `yuv420p` pixel format (maximum compatibility)
    - `movflags +faststart` (web-friendly)
    - **H.264 even dimensions enforced**: desktop 1280x720, mobile 376x812

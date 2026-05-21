@@ -163,17 +163,11 @@ Create a structured README with these sections. Include sections only if applica
 
 ## Demo
 
-<video src="RELEASE_URL/demo-web.mp4" controls width="640"></video>
+<video src="URL/demo-web.mp4" controls width="640"></video>
 
 ## Screenshots
 
 [Media gallery table from Phase 4]
-
-## Features
-
-- Feature 1 with brief description
-- Feature 2 with brief description
-- Feature 3 with brief description
 
 ## Getting Started
 
@@ -198,13 +192,23 @@ Create a structured README with these sections. Include sections only if applica
 [Test commands]
 \`\`\`
 
+## Features
+
+- Feature 1 with brief description
+- Feature 2 with brief description
+- Feature 3 with brief description
+
+## About
+
+[Optional: Brief explanation of the project's motivation and why it exists.]
+
 ## Project Structure
 
 \`\`\`
 [src/ tree visualization]
 \`\`\`
 
-## Available Scripts
+[Optional: Available Scripts — only if npm/yarn/pnpm/bun detected]
 
 | Command | Description |
 |---------|-------------|
@@ -230,7 +234,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-This project is licensed under the [LICENSE] License.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 ```
 
 ## Guidelines
