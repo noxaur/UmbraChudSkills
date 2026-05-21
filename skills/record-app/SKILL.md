@@ -122,8 +122,10 @@ Run `animate.js` to post-process all captured clips:
 - Format: MP4 (H.264 codec, compatible with GitHub)
 - CRF: 18 (high quality)
 - Aspect ratio: preserve original — use `scale=-2:height` or `scale=width:-2` to maintain even dimensions
-- Audio: AAC, 192kbps
+- **H.264 requires even dimensions** — if captured dimensions are odd (e.g., 375x812), round up to even (376x812)
+- Audio: AAC, 192kbps — only if music file exists, skip with warning if missing
 - Never stretch or squash — always pad with black bars if needed
+- Clean up old `.webm` files after successful `.mp4` creation
 
 ### Phase 5: Publish
 

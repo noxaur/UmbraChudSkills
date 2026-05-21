@@ -95,13 +95,21 @@ async function main() {
 
   console.log(`\nDone: ${mp4Output}`);
   console.log(`Gallery images: ${galleryPaths.join(', ')}`);
+
+  // Clean up old webm files from previous runs
+  for (const file of fs.readdirSync(outputDir)) {
+    if (file.endsWith('.webm')) {
+      const webmPath = path.join(outputDir, file);
+      fs.unlinkSync(webmPath);
+      console.log(`  Cleaned up: ${file}`);
+    }
+  }
 }
 
 function buildFfmpegCommand(clipPaths, output, scenes, viewport, music) {
   if (clipPaths.length === 0) return '';
 
   const firstPath = clipPaths[0];
-  // Detect original dimensions from first image
   let origWidth, origHeight;
   try {
     const info = execSync(`ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=s=x:p=0 "${firstPath}" 2>/dev/null || echo "1280x720"`).toString().trim();
@@ -111,7 +119,11 @@ function buildFfmpegCommand(clipPaths, output, scenes, viewport, music) {
     origHeight = viewport === 'mobile' ? 812 : 720;
   }
 
-  const durationPerScene = 4; // seconds
+  // H.264 requires even dimensions — force even
+  if (origWidth % 2 !== 0) origWidth += 1;
+  if (origHeight % 2 !== 0) origHeight += 1;
+
+  const durationPerScene = 4;
   const fps = 30;
 
   if (clipPaths.length === 1) {
@@ -128,7 +140,11 @@ function buildFfmpegCommand(clipPaths, output, scenes, viewport, music) {
     let audioPart = '';
     if (music && music !== 'none') {
       const musicFile = getMusicFile(music);
-      audioPart = `-stream_loop -1 -i "${musicFile}" -filter_complex "[1:a]volume=0.15,afade=t=in:st=0:d=2,afade=t=out:st=${durationPerScene - 2}:d=2[aout]" -map "[aout]" -c:a aac -b:a 192k`;
+      if (fs.existsSync(musicFile)) {
+        audioPart = `-stream_loop -1 -i "${musicFile}" -filter_complex "[1:a]volume=0.15,afade=t=in:st=0:d=2,afade=t=out:st=${durationPerScene - 2}:d=2[aout]" -map "[aout]" -c:a aac -b:a 192k`;
+      } else {
+        console.log(`  Music file not found: ${musicFile}, skipping audio`);
+      }
     }
 
     return `ffmpeg -y -loop 1 -i "${clipPaths[0]}" ${audioPart} -vf "${filter}" -t ${durationPerScene} -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart "${output}"`;
@@ -142,7 +158,6 @@ function buildFfmpegCommand(clipPaths, output, scenes, viewport, music) {
     filterComplex += `[${i}:v]scale=${origWidth}:${origHeight},setsar=1,fps=${fps}[v${i}];`;
   }
 
-  // Chain with fade transitions
   const transitionDuration = 0.5;
   filterComplex += `[v0][v1]xfade=transition=fade:duration=${transitionDuration}:offset=${durationPerScene - transitionDuration}[t1];`;
   for (let i = 2; i < clipPaths.length; i++) {
@@ -155,8 +170,14 @@ function buildFfmpegCommand(clipPaths, output, scenes, viewport, music) {
   const totalDuration = clipPaths.length * durationPerScene - (clipPaths.length - 1) * transitionDuration;
   if (music && music !== 'none') {
     const musicFile = getMusicFile(music);
-    filterComplex += `[t${lastIdx}]format=yuv420p[outv]`;
-    audioPart = `-stream_loop -1 -i "${musicFile}" -filter_complex "${filterComplex};[1:a]volume=0.15,afade=t=in:st=0:d=2,afade=t=out:st=${totalDuration - 2}:d=2[aout]" -map "[outv]" -map "[aout]" -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 192k`;
+    if (fs.existsSync(musicFile)) {
+      filterComplex += `[t${lastIdx}]format=yuv420p[outv]`;
+      audioPart = `-stream_loop -1 -i "${musicFile}" -filter_complex "${filterComplex};[1:a]volume=0.15,afade=t=in:st=0:d=2,afade=t=out:st=${totalDuration - 2}:d=2[aout]" -map "[outv]" -map "[aout]" -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart -c:a aac -b:a 192k`;
+    } else {
+      console.log(`  Music file not found: ${musicFile}, skipping audio`);
+      filterComplex += `[t${lastIdx}]format=yuv420p[outv]`;
+      audioPart = `-filter_complex "${filterComplex}" -map "[outv]" -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart`;
+    }
   } else {
     filterComplex += `[t${lastIdx}]format=yuv420p[outv]`;
     audioPart = `-filter_complex "${filterComplex}" -map "[outv]" -c:v libx264 -crf 18 -pix_fmt yuv420p -movflags +faststart`;
@@ -167,13 +188,20 @@ function buildFfmpegCommand(clipPaths, output, scenes, viewport, music) {
 
 function getMusicFile(genre) {
   const musicDir = path.join(__dirname, '..', 'music');
+  const globalMusicDir = path.join(process.env.HOME || '', '.config', 'opencode', 'skills', 'record-app', 'music');
   const files = {
-    beethoven: path.join(musicDir, 'beethoven-sonata-32.mp3'),
-    jazz: path.join(musicDir, 'smooth-jazz.mp3'),
-    lofi: path.join(musicDir, 'lofi-beat.mp3'),
-    ambient: path.join(musicDir, 'ambient.mp3'),
+    beethoven: 'beethoven-sonata-32.mp3',
+    jazz: 'smooth-jazz.mp3',
+    lofi: 'lofi-beat.mp3',
+    ambient: 'ambient.mp3',
   };
-  return files[genre] || files.beethoven;
+  const filename = files[genre] || files.beethoven;
+  // Try local music dir first, then global
+  const localPath = path.join(musicDir, filename);
+  if (fs.existsSync(localPath)) return localPath;
+  const globalPath = path.join(globalMusicDir, filename);
+  if (fs.existsSync(globalPath)) return globalPath;
+  return localPath; // return local path even if missing (caller checks exists)
 }
 
 main().catch(err => {
