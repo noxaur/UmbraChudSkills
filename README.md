@@ -1,6 +1,8 @@
-# Knock Skills
+# UmbraChud Skills
 
 A curated collection of OpenCode skills for codebase auditing, issue resolution, visual recording, and project documentation.
+
+[![skills.sh](https://skills.sh/b/noxaur/UmbraChudSkills)](https://skills.sh/noxaur/UmbraChudSkills)
 
 ## Skills
 
@@ -13,6 +15,12 @@ A curated collection of OpenCode skills for codebase auditing, issue resolution,
 | [`karpathy-guidelines`](skills/karpathy-guidelines/) | Behavioral guidelines to reduce common LLM coding mistakes. Think before coding, simplicity first, surgical changes, goal-driven execution. |
 
 ## Installation
+
+### Via skills.sh
+
+```bash
+npx skills add noxaur/UmbraChudSkills
+```
 
 ### Global Install (all skills)
 
