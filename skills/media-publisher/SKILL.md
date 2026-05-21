@@ -1,6 +1,6 @@
 ---
 name: media-publisher
-description: Publish media assets (images, videos, GIFs) to GitHub for inline embedding in README. Uploads to user-attachments for inline video playback, or falls back to GitHub Releases. Use when asked to publish media, upload assets to GitHub, generate embeddable URLs, or embed videos/images in README.
+description: Publish media assets (images, videos, GIFs) to GitHub for inline embedding in README. Uploads to user-attachments for inline video playback, or falls back to GitHub Releases. Reuses the latest media release tag for cumulative uploads. Use when asked to publish media, upload assets to GitHub, generate embeddable URLs, or embed videos/images in README.
 license: MIT
 ---
 
@@ -26,7 +26,7 @@ The skill auto-detects the best available upload method:
 |--------|----------|--------------|-------|
 | **user-attachments** | `gh-image` | Yes | `gh extension install drogers0/gh-image` |
 | **user-attachments** | `gh-attach` | Yes | `gh extension install Addono/gh-attach` |
-| **Release assets** | `gitshot` | No (clickable) | `gh extension install vipulgupta2048/gitshot` |
+| **Release assets** | `gitshot` via `gh shot` | No (clickable) | `gh extension install vipulgupta2048/gitshot` |
 | **Release assets** | `gh release` | No (clickable) | Built-in, no install needed |
 
 **Recommended:** Install `gh-image` for inline video support:
@@ -136,7 +136,7 @@ Uses browser automation (playwright). More reliable but slower.
 gh extension install vipulgupta2048/gitshot
 ```
 
-Auto-creates a public `gitshot-images` repo. No browser needed.
+Auto-creates a public `gitshot-images` repo. No browser needed. When installed as a gh extension, invoke via `gh shot`. When installed globally via npm, invoke via `gitshot`.
 
 ## Dependencies
 
@@ -154,3 +154,4 @@ Auto-creates a public `gitshot-images` repo. No browser needed.
 - **Empty media dir**: Warn, skip
 - **Upload fails for one file**: Continue with others, report failures
 - **Private repos**: user-attachments URLs inherit repo visibility (stay private)
+- **Undocumented endpoint**: `gh-image` and `gh-attach` use GitHub's internal user-attachments API which may break without notice. Release fallback always works.

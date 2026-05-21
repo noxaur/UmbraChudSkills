@@ -93,39 +93,37 @@ for file in "$MEDIA_DIR"/*; do
       ;;
 
     gh-attach)
-      # gh-attach with --url-only and --release for no-browser mode
-      asset_url=$(gh-attach upload "$file" --target "$REPO_FULL" --strategy release-asset --format url 2>/dev/null) || true
+      # Use gh attach (gh extension) to get user-attachments URL
+      output=$(gh attach "$file" --repo "$REPO_FULL" 2>/dev/null) || true
+      # Extract URL from output (markdown format: ![name](URL))
+      asset_url=$(echo "$output" | grep -oP 'https://github\.com/user-attachments/assets/[^)]+' || echo "")
       ;;
 
     gitshot)
-      # gitshot outputs markdown or raw URL
-      output=$(gitshot "$file" --raw 2>/dev/null) || true
+      # gitshot: `gh shot` when installed as gh extension, `gitshot` when global npm
+      if command -v gitshot &> /dev/null; then
+        output=$(gitshot "$file" --raw 2>/dev/null) || true
+      else
+        output=$(gh shot "$file" --raw 2>/dev/null) || true
+      fi
       asset_url="$output"
       ;;
 
     releases)
-      # Find or create media-vN release
+      # Find latest media-vN release; reuse it to avoid tag pollution
       LATEST_TAG=$(gh release list --limit 30 --json tagName -q '.[].tagName' 2>/dev/null | grep '^media-v' | sort -V | tail -1 || echo "")
 
       if [ -z "$LATEST_TAG" ]; then
-        NEXT_VERSION=1
-      else
-        CURRENT_VERSION=$(echo "$LATEST_TAG" | sed 's/media-v//')
-        NEXT_VERSION=$((CURRENT_VERSION + 1))
-      fi
-
-      NEW_TAG="media-v${NEXT_VERSION}"
-
-      # Create release if it doesn't exist
-      gh release view "$NEW_TAG" &>/dev/null || \
-        gh release create "$NEW_TAG" \
-          --title "Media Assets v${NEXT_VERSION}" \
+        LATEST_TAG="media-v1"
+        gh release create "$LATEST_TAG" \
+          --title "Media Assets v1" \
           --notes "Cumulative media assets for $REPO_FULL" \
           2>/dev/null || true
+      fi
 
-      # Upload file
-      if gh release upload "$NEW_TAG" "$file" --clobber 2>/dev/null; then
-        asset_url="$REPO_URL/releases/download/$NEW_TAG/$filename"
+      # Upload file to the existing/latest release (--clobber overwrites duplicates)
+      if gh release upload "$LATEST_TAG" "$file" --clobber 2>/dev/null; then
+        asset_url="$REPO_URL/releases/download/$LATEST_TAG/$filename"
       fi
       ;;
   esac
