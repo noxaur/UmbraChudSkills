@@ -44,8 +44,8 @@ Great! A few options:
 **If the user doesn't respond to any question** — use these defaults:
 - Video: yes
 - Animation style: professional
-- Length: 45s
-- Music: Beethoven (Sonata No. 32 at 15% volume)
+- Length: 30s
+- Music: none (conservative fallback when user doesn't respond)
 
 **After Phase 1 (Analyze Codebase) completes**, present the auto-detected platforms and scenes for confirmation:
 
@@ -134,9 +134,9 @@ Use asset URLs for clickable images that open at full resolution:
 
 | | |
 |---|---|
-| [![Landing](URL/landing-desktop-web.png?width=400)](URL/landing-desktop-web.png) | [![Dashboard](URL/dashboard-desktop-web.png?width=400)](URL/dashboard-desktop-web.png) |
+| <a href="URL/landing-desktop-web.png"><img src="URL/landing-desktop-web.png" width="400" alt="Landing"></a> | <a href="URL/dashboard-desktop-web.png"><img src="URL/dashboard-desktop-web.png" width="400" alt="Dashboard"></a> |
 | *Landing page* | *Dashboard view* |
-| [![Settings](URL/settings-desktop-web.png?width=400)](URL/settings-desktop-web.png) | [![Mobile View](URL/landing-mobile-web.png?width=400)](URL/landing-mobile-web.png) |
+| <a href="URL/settings-desktop-web.png"><img src="URL/settings-desktop-web.png" width="400" alt="Settings"></a> | <a href="URL/landing-mobile-web.png"><img src="URL/landing-mobile-web.png" width="400" alt="Mobile View"></a> |
 | *Settings panel* | *Mobile landing* |
 ```
 

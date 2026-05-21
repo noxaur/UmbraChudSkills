@@ -57,7 +57,7 @@ For multi-platform projects (e.g., React Native + web admin, Electron cross-plat
   ],
   output: "docs/media/demo-{platform}.mp4",
   viewport: "desktop",  // or "mobile" for web
-  music: "jazz"         // beethoven, jazz, lofi, ambient, none, or direct file path
+  music: "none"         // beethoven, jazz, lofi, ambient, none, or direct file path
 }
 ```
 
@@ -65,9 +65,9 @@ For multi-platform projects (e.g., React Native + web admin, Electron cross-plat
    - "I can make this feel **professional** (clean fades, slow zooms) or **energetic** (quick cuts, dynamic pans). Which vibe?"
    - If user doesn't respond → default to **professional**
 
-4. **Ask about background music** (required):
-   - "Want background music for the demo video? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**."
-   - If user doesn't respond → default to **Beethoven** (Sonata No. 32 at 15% volume)
+4. **Ask about background music** (optional):
+   - "Want background music for the demo video? I can add **Beethoven**, **jazz**, **lo-fi**, **ambient**, or **none**."
+   - If user doesn't respond → no music
    - Music is looped/cropped to match video duration, fades in/out over 2s
 
 ### Phase 3: Capture
@@ -226,8 +226,8 @@ If a dependency is missing, the skill should inform the user and offer installat
 ## Background Music
 
 **Always ask the user before adding music:**
-- "Want background music? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**."
-- If user doesn't respond → default to **Beethoven** (Sonata No. 32 at 15% volume)
+- "Want background music? I can add **Beethoven**, **jazz**, **lo-fi**, **ambient**, or **none**."
+- If user doesn't respond → no music (conservative fallback)
 - Music is looped/cropped to match video duration
 - Volume: 15% of original audio (ducked so UI sounds remain audible)
 - Fades in over first 2s, fades out over last 2s
