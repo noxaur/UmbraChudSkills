@@ -75,7 +75,7 @@ FAILED=0
 SUCCESS=0
 declare -A URLS_MAP
 
-# Find/create shared release tag for gh-attach and releases methods
+# Find/create shared media-vN release tag for releases method
 find_release_tag() {
   local tag
   tag=$(gh release list --limit 30 --json tagName -q '.[].tagName' 2>/dev/null | grep '^media-v' | sort -V | tail -1 || echo "")
@@ -119,8 +119,9 @@ for file in "$MEDIA_DIR"/*; do
       ;;
 
     gh-attach)
-      LATEST_TAG=$(find_release_tag)
-      output=$(gh attach upload --strategy release-asset --target "$LATEST_TAG" --format url "$file" 2>/dev/null) || true
+      # gh-attach release-asset uploads to its own _gh-attach-assets release.
+      # --target must be an issue/PR ref (owner/repo#N); uses #1 by convention.
+      output=$(gh attach upload --strategy release-asset --target "$REPO_FULL#1" --format url "$file" 2>/dev/null) || true
       if [ -n "$output" ]; then
         asset_url="$output"
       fi

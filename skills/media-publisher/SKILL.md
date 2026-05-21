@@ -49,7 +49,7 @@ Upload all files using the detected method:
 
 - **gh-image**: Reads browser cookies, uploads to `user-attachments` endpoint
 - **gitshot**: Creates dedicated public repo, uploads as Release assets
-- **gh-attach**: Uploads to `media-vN` release via `gh attach upload --strategy release-asset`
+- **gh-attach**: Uploads to its own `_gh-attach-assets` release via `gh attach upload --strategy release-asset`
 - **releases**: Creates `media-vN` release, uploads as Release assets
 
 ### Phase 3: Manifest
@@ -128,7 +128,7 @@ Reads browser cookies, uploads to `user-attachments` endpoint. Requires active b
 gh extension install Addono/gh-attach
 ```
 
-Auto-detected when installed. Uploads as Release assets (clickable thumbnails, no inline video). Uses `--strategy release-asset` to upload to the shared `media-vN` release tag.
+Auto-detected when installed. Uploads as Release assets (clickable thumbnails, no inline video). Creates its own `_gh-attach-assets` release on the target repo. Requires issue/PR `#1` to exist for the `--target` reference (most repos have it by default).
 
 ### gitshot (zero-config — clickable only)
 
