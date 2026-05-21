@@ -48,6 +48,10 @@ Parse the user's edit request into specific operations:
 - Output format? (default: MP4 for video, PNG for images)
 - Quality settings? (default: CRF 18 for video, q:v 2 for images)
 
+**If adding music, ask the user:**
+- "Want background music? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**."
+- If user doesn't respond → default to **Beethoven** (Sonata No. 32 at 15% volume)
+
 ### Phase 2: Verify Source Files
 
 Check that source files exist and are valid:
