@@ -21,14 +21,15 @@ Run these test agents in parallel using the Task tool:
 
 1. **@test-record-app** — Tests record-app skill (screenshots, video, music, aspect ratio)
 2. **@test-media-editor** — Tests media-editor skill (trim, resize, watermark, format conversion)
-3. **@test-codebase-auditor** — Tests codebase-auditor skill (security, performance, architecture)
-4. **@test-issue-resolver** — Tests issue-resolver skill (TDD, PR creation, verification)
-5. **@test-create-project-readme** — Tests create-project-readme skill (analysis, generation, accuracy)
+3. **@test-media-publisher** — Tests media-publisher skill (GitHub Releases, asset URLs, versioning)
+4. **@test-codebase-auditor** — Tests codebase-auditor skill (security, performance, architecture)
+5. **@test-issue-resolver** — Tests issue-resolver skill (TDD, PR creation, verification)
+6. **@test-create-project-readme** — Tests create-project-readme skill (analysis, generation, accuracy)
 
 ## Workflow
 
 ### Phase 1: Launch All Tests
-Invoke all 5 test subagents simultaneously using the Task tool. Each test is independent.
+Invoke all 6 test subagents simultaneously using the Task tool. Each test is independent.
 
 ### Phase 2: Collect Results
 Wait for all subagents to complete and return their JSON test reports.
@@ -44,6 +45,7 @@ Create a comprehensive test report:
 |-------|--------|-------------|--------------|
 | record-app | ✅/❌ | X/Y | Z/Y |
 | media-editor | ✅/❌ | X/Y | Z/Y |
+| media-publisher | ✅/❌ | X/Y | Z/Y |
 | codebase-auditor | ✅/❌ | X/Y | Z/Y |
 | issue-resolver | ✅/❌ | X/Y | Z/Y |
 | create-project-readme | ✅/❌ | X/Y | Z/Y |
@@ -68,6 +70,16 @@ Create a comprehensive test report:
 - [ ] overlays text on image
 - [ ] converts image format
 - [ ] adds fade effects
+
+### media-publisher
+- [ ] creates release
+- [ ] uploads all assets
+- [ ] generates manifest
+- [ ] asset URLs are accessible
+- [ ] video URL works for inline playback
+- [ ] image URL works for clickable embed
+- [ ] versioning increments correctly
+- [ ] cumulative (all files in each release)
 
 ### codebase-auditor
 - [ ] detects SQL injection
