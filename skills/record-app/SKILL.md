@@ -57,7 +57,7 @@ For multi-platform projects (e.g., React Native + web admin, Electron cross-plat
   ],
   output: "docs/media/demo-{platform}.mp4",
   viewport: "desktop",  // or "mobile" for web
-  music: "none"         // beethoven, none, or direct file path
+  music: "beethoven"  // beethoven, smooth-jazz, lofi-beat, ambient, none, or direct file path
 }
 ```
 
@@ -66,7 +66,7 @@ For multi-platform projects (e.g., React Native + web admin, Electron cross-plat
    - If user doesn't respond → default to **professional**
 
 4. **Ask about background music** (optional):
-   - "Want background music for the demo video? I can add **Beethoven** or **none**."
+   - "Want background music for the demo video? I can add **Beethoven**, **smooth-jazz**, **lofi-beat**, **ambient**, or **none**."
    - If user doesn't respond → no music
    - Music is looped/cropped to match video duration, fades in/out over 2s
 
@@ -219,7 +219,7 @@ If a dependency is missing, the skill should inform the user and offer installat
 ## Background Music
 
 **Always ask the user before adding music:**
-- "Want background music? I can add **Beethoven** or **none**."
+- "Want background music? I can add **Beethoven**, **smooth-jazz**, **lofi-beat**, **ambient**, or **none**."
 - If user doesn't respond → no music (conservative fallback)
 - Music is looped/cropped to match video duration
 - Volume: 15% of original audio (ducked so UI sounds remain audible)
@@ -233,6 +233,9 @@ If a dependency is missing, the skill should inform the user and offer installat
 | `beethoven-sonata-1.mp3` | Sonata No. 1 in F Minor, Op. 2 No. 1 — IV. Prestissimo | ~4 min |
 | `beethoven-sonata-15.mp3` | Sonata No. 15 in D Major, Op. 28 "Pastoral" — IV. Rondo | ~6 min |
 | `beethoven-sonata-22.mp3` | Sonata No. 22 in F Major, Op. 54 — II. Allegretto | ~8 min |
+| `smooth-jazz.mp3` | Smooth Jazz | ~15 s |
+| `lofi-beat.mp3` | Lo-fi Beat | ~15 s |
+| `ambient.mp3` | Ambient Drone | ~15 s |
 
 ### Music File Resolution
 

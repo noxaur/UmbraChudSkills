@@ -38,7 +38,7 @@ Great! A few options:
 - **Video length target:** 30s, 45s, or 60s
 
 - **Background music:**
-  - Want background music for the demo video? I can add **Beethoven** or **none**.
+  - Want background music for the demo video? I can add **Beethoven**, **smooth-jazz**, **lofi-beat**, **ambient**, or **none**.
 ```
 
 **If the user doesn't respond to any question** — use these defaults:
@@ -66,8 +66,14 @@ Include all, or select which to record?
 
 **Detection priority** (check in order, first match wins):
 1. Multiple distinct platforms (e.g., `react-native` + `next.js`, Electron + web) → multi-platform
-2. Mobile frameworks (React Native, Flutter, SwiftUI, Kotlin, Android XML) → native
-3. Desktop frameworks (Electron, Tauri, Flutter Desktop) → native (desktop)
+2. Desktop-only indicators → native (desktop)
+   - **Electron**: `electron-builder.yml`, `electron` in devDependencies
+   - **Tauri**: `tauri.conf.json`
+   - **Flutter Desktop**: `pubspec.yaml` + `macos/` or `windows/` or `linux/` directory
+3. Mobile/shared frameworks → native
+   - **React Native**: `react-native` in dependencies
+   - **Flutter (mobile)**: `pubspec.yaml` without desktop platform directories
+   - **SwiftUI**, **Kotlin**, **Android XML**: platform-specific files
 4. Web frameworks (React, Next.js, Vue, Svelte, Express, Django, Rails) → web
 5. No UI framework found → no-UI (CLI/library/API)
 

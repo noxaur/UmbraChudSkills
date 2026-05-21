@@ -25,7 +25,6 @@ The skill auto-detects the best available upload method:
 | Method | CLI Tool | Inline Video | Setup |
 |--------|----------|--------------|-------|
 | **user-attachments** | `gh-image` | Yes | `gh extension install drogers0/gh-image` |
-| **user-attachments** | `gh-attach` | Yes | `gh extension install Addono/gh-attach` |
 | **Release assets** | `gitshot` via `gh shot` | No (clickable) | `gh extension install vipulgupta2048/gitshot` |
 | **Release assets** | `gh release` | No (clickable) | Built-in, no install needed |
 
@@ -40,7 +39,7 @@ gh extension install drogers0/gh-image
 
 1. Verify `docs/media/` exists and contains files
 2. Check `gh` CLI is installed and authenticated
-3. Detect best upload method (gh-image → gh-attach → gitshot → releases)
+3. Detect best upload method (gh-image → gitshot → releases)
 4. Count files to publish
 
 ### Phase 2: Upload
@@ -48,7 +47,6 @@ gh extension install drogers0/gh-image
 Upload all files using the detected method:
 
 - **gh-image**: Reads browser cookies, uploads to `user-attachments` endpoint
-- **gh-attach**: Browser automation via playwright, uploads to `user-attachments`
 - **gitshot**: Creates dedicated public repo, uploads as Release assets
 - **releases**: Creates `media-vN` release, uploads as Release assets
 
@@ -122,13 +120,13 @@ gh extension install drogers0/gh-image
 
 Reads browser cookies, uploads to `user-attachments` endpoint. Requires active browser session with GitHub.
 
-### gh-attach (alternative — inline video)
+### gh-attach (alternative — inline video, not auto-detected)
 
 ```bash
 gh extension install Addono/gh-attach
 ```
 
-Uses browser automation (playwright). More reliable but slower.
+Uses browser automation (playwright). Requires active browser session with GitHub. Not auto-detected by the script — invoke manually if configured.
 
 ### gitshot (zero-config — clickable only)
 
@@ -154,4 +152,4 @@ Auto-creates a public `gitshot-images` repo. No browser needed. When installed a
 - **Empty media dir**: Warn, skip
 - **Upload fails for one file**: Continue with others, report failures
 - **Private repos**: user-attachments URLs inherit repo visibility (stay private)
-- **Undocumented endpoint**: `gh-image` and `gh-attach` use GitHub's internal user-attachments API which may break without notice. Release fallback always works.
+- **Undocumented endpoint**: `gh-image` uses GitHub's internal user-attachments API which may break without notice. Release fallback always works.

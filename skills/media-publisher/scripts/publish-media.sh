@@ -52,15 +52,12 @@ UPLOAD_METHOD=""
 if gh extension list 2>/dev/null | grep -q "gh-image"; then
   UPLOAD_METHOD="gh-image"
   echo "Using: gh-image (user-attachments URLs — inline video support)"
-# Method 2: gh-attach (browser automation, gets user-attachments URLs)
-elif command -v gh-attach &> /dev/null || (gh extension list 2>/dev/null | grep -q "gh-attach"); then
-  UPLOAD_METHOD="gh-attach"
-  echo "Using: gh-attach (user-attachments URLs — inline video support)"
-# Method 3: gitshot (zero-config, uses Releases on dedicated repo)
+  echo "Note: Requires browser auth session token. Falls back to Releases if unavailable."
+# Method 2: gitshot (zero-config, uses Releases on dedicated repo)
 elif command -v gitshot &> /dev/null || (gh extension list 2>/dev/null | grep -q "gitshot"); then
   UPLOAD_METHOD="gitshot"
   echo "Using: gitshot (Release assets — clickable thumbnails)"
-# Method 4: GitHub Releases (official API, no inline video)
+# Method 3: GitHub Releases (official API, no inline video)
 else
   UPLOAD_METHOD="releases"
   echo "Using: GitHub Releases (official API — clickable thumbnails, no inline video)"
@@ -89,13 +86,6 @@ for file in "$MEDIA_DIR"/*; do
       # gh-image outputs markdown: ![filename](URL)
       output=$(gh image "$file" --repo "$REPO_FULL" 2>/dev/null) || true
       # Extract URL from markdown: ![name](URL)
-      asset_url=$(echo "$output" | grep -oP 'https://github\.com/user-attachments/assets/[^)]+' || echo "")
-      ;;
-
-    gh-attach)
-      # Use gh attach (gh extension) to get user-attachments URL
-      output=$(gh attach "$file" --repo "$REPO_FULL" 2>/dev/null) || true
-      # Extract URL from output (markdown format: ![name](URL))
       asset_url=$(echo "$output" | grep -oP 'https://github\.com/user-attachments/assets/[^)]+' || echo "")
       ;;
 

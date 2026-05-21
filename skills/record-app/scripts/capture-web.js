@@ -36,6 +36,9 @@ function getViewportConfig(viewport) {
 function getMusicFile(genre) {
   const files = {
     beethoven: 'beethoven-sonata-32.mp3',
+    'smooth-jazz': 'smooth-jazz.mp3',
+    'lofi-beat': 'lofi-beat.mp3',
+    ambient: 'ambient.mp3',
   };
   const filename = files[genre] || files.beethoven;
   const localDir = path.join(__dirname, '..', 'music');
@@ -57,7 +60,7 @@ function findMusicFile(music) {
   // Look up by genre
   const result = getMusicFile(music);
   if (!result) {
-    console.warn(`Music file for '${music}' not found; skipping audio.`);
+    console.warn(`Music file for '${music}' not found; skipping audio. Available: beethoven, smooth-jazz, lofi-beat, ambient`);
   }
   return result;
 }
@@ -184,9 +187,6 @@ async function main() {
         }
       }
     }
-  } catch {
-    console.log('  No screenshots to resize.');
-  }
 
   // Clean up clips directory and old .webm files
   console.log('\nCleaning up...');

@@ -49,7 +49,7 @@ Parse the user's edit request into specific operations:
 - Quality settings? (default: CRF 18 for video, q:v 2 for images)
 
 **If adding music, ask the user:**
-- "Want background music? I can add **Beethoven**, or **none**."
+- "Want background music? I can add **Beethoven**, **smooth-jazz**, **lofi-beat**, **ambient**, or **none**."
 - If user doesn't respond → default to **Beethoven** (Sonata No. 32 at 15% volume)
 
 ### Phase 2: Verify Source Files
@@ -124,6 +124,9 @@ Background music files are stored in `skills/record-app/music/`:
 | `beethoven-sonata-1.mp3` | Sonata No. 1 in F Minor, Op. 2 No. 1 — IV. Prestissimo | Energetic, intense |
 | `beethoven-sonata-15.mp3` | Sonata No. 15 in D Major, Op. 28 "Pastoral" — IV. Rondo | Light, pastoral |
 | `beethoven-sonata-22.mp3` | Sonata No. 22 in F Major, Op. 54 — II. Allegretto | Playful, rhythmic |
+| `smooth-jazz.mp3` | Smooth Jazz | Relaxed, warm |
+| `lofi-beat.mp3` | Lo-fi Beat | Mellow, chill |
+| `ambient.mp3` | Ambient Drone | Atmospheric, calm |
 
 Default: `beethoven-sonata-32.mp3` at 15% volume.
 
