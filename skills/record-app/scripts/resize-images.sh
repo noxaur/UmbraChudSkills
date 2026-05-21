@@ -1,13 +1,13 @@
 #!/bin/bash
 # resize-images.sh — Resize screenshots for gallery embedding
 # Usage: ./resize-images.sh <input-dir> <output-dir> [max-width]
-# Default max-width: 400px
+# Default max-width: 1200px
 
 set -e
 
 INPUT_DIR="$1"
 OUTPUT_DIR="$2"
-MAX_WIDTH="${3:-400}"
+MAX_WIDTH="${3:-1200}"
 
 if [ -z "$INPUT_DIR" ] || [ -z "$OUTPUT_DIR" ]; then
   echo "Usage: ./resize-images.sh <input-dir> <output-dir> [max-width]"
@@ -47,7 +47,7 @@ for img in "$INPUT_DIR"/*.png; do
       sips -Z "$MAX_WIDTH" "$img" --out "$output" >/dev/null 2>&1
       ;;
     convert)
-      convert "$img" -resize "${MAX_WIDTH}x" -strip -quality 85 "$output"
+      convert "$img" -resize "${MAX_WIDTH}x" -quality 95 "$output"
       ;;
     ffmpeg)
       ffmpeg -y -i "$img" -vf "scale=${MAX_WIDTH}:-1" -frames:v 1 "$output" 2>/dev/null

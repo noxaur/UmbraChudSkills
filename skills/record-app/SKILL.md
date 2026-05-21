@@ -147,17 +147,17 @@ In addition to the demo video, individual screenshots are saved and resized for 
 
 ```
 docs/media/
-├── landing-desktop-web.png    # Resized to 400px width
-├── dashboard-desktop-web.png  # Resized to 400px width
-├── settings-desktop-web.png   # Resized to 400px width
-├── home-screen-ios.png        # Resized to 400px width
+├── landing-desktop-web.png    # Resized to 1200px width
+├── dashboard-desktop-web.png  # Resized to 1200px width
+├── settings-desktop-web.png   # Resized to 1200px width
+├── home-screen-ios.png        # Resized to 1200px width
 └── ...
 ```
 
 **Resize rules:**
-- Max width: 400px (maintains aspect ratio)
+- Max width: 1200px (maintains aspect ratio)
 - Format: PNG (lossless)
-- Quality: optimized for web (strip metadata, compress)
+- Quality: high quality, minimal compression
 - If resize tool unavailable, save original with warning
 
 ## Auto-Assigned Effects
