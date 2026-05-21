@@ -1,6 +1,6 @@
 ---
 name: record-app
-description: Capture screenshots, GIFs, and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Automatically applies smooth animations and transitions, then stitches into a polished demo video with optional jazz background music. Use when asked to record an app, capture screenshots, create a demo video, or document a UI visually.
+description: Capture screenshots, GIFs, and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Automatically applies smooth animations and transitions, then stitches into a polished demo video with optional background music (default: Beethoven). Use when asked to record an app, capture screenshots, create a demo video, or document a UI visually.
 license: MIT
 ---
 
@@ -134,17 +134,16 @@ Post-process all captured clips:
 
 ### Phase 5: Publish
 
-Run `publish-media.sh` from the `media-publisher` skill to upload all media to GitHub:
+Invoke the `media-publisher` skill to upload all media to GitHub:
 
-1. Check `gh` CLI is available and authenticated
-2. Run `./skills/media-publisher/scripts/publish-media.sh docs/media`
-3. The script auto-detects the best upload method:
+1. The `media-publisher` skill will check `gh` CLI is available and authenticated
+2. It will auto-detect the best upload method:
    - **gh-image** → `user-attachments` URLs (inline video playback in README)
    - **gh-attach** → `user-attachments` URLs (inline video playback)
    - **gitshot** → Release assets (clickable thumbnails)
    - **gh release** → Release assets (clickable thumbnails, fallback)
-4. Saves `docs/media/media-manifest.json` with asset URLs
-5. Ask user: "Publish media to GitHub for inline embedding?" (default: yes if `gh` available)
+3. Saves `docs/media/media-manifest.json` with asset URLs
+4. Ask user: "Publish media to GitHub for inline embedding?" (default: yes if `gh` available)
 
 If `gh` is not available, skip this phase and inform the user.
 If no `gh-image` or `gh-attach` is installed, inform the user that inline video requires one of these:
