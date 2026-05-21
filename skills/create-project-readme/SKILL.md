@@ -42,6 +42,9 @@ Great! A few options:
   (Select which to include, or "all")
 
 - **Video length target:** 30s, 45s, or 60s
+
+- **Background music:**
+  - Want background music for the demo video? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**.
 ```
 
 **If the user doesn't respond to any question** — use these defaults:
@@ -50,6 +53,7 @@ Great! A few options:
 - Animation style: professional
 - Scenes: all auto-detected key screens
 - Length: 45s
+- Music: Beethoven (Sonata No. 32 at 15% volume)
 
 ### Phase 1: Analyze Codebase
 

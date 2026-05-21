@@ -56,8 +56,8 @@ For multi-platform projects (e.g., React Native + web admin, Electron cross-plat
    - "I can make this feel **professional** (clean fades, slow zooms) or **energetic** (quick cuts, dynamic pans). Which vibe?"
    - If user doesn't respond → default to **professional**
 
-4. **Ask about background music** (optional):
-   - "Want background music? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**."
+4. **Ask about background music** (required):
+   - "Want background music for the demo video? I can add **Beethoven** (default), **jazz**, **lo-fi**, **ambient**, or **none**."
    - If user doesn't respond → default to **Beethoven** (Sonata No. 32 at 15% volume)
    - Music is looped/cropped to match video duration, fades in/out over 2s
 
