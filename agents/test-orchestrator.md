@@ -121,4 +121,4 @@ Create a comprehensive test report:
 ```
 
 ### Phase 4: Save Report
-Save the report to `/tmp/knock-skills/TEST-REPORT.md` and push to the GitHub repo.
+Save the report to `TEST-REPORT.md` in the repo root and push to the GitHub repo.
