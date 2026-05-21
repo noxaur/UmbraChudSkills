@@ -1,6 +1,6 @@
 ---
 name: record-app
-description: Capture screenshots, GIFs, and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Automatically applies smooth animations and transitions, then stitches all captures into a single polished demo video. Use when asked to record an app, capture screenshots, create a demo video, or document a UI visually.
+description: Capture screenshots, GIFs, and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Automatically applies smooth animations and transitions, then stitches into a polished demo video with optional jazz background music. Use when asked to record an app, capture screenshots, create a demo video, or document a UI visually.
 license: MIT
 ---
 
@@ -47,7 +47,7 @@ For multi-platform projects (e.g., React Native + web admin, Electron cross-plat
     { path: "/signup", name: "signup", effects: ["ease-in-out"] }
   ],
   transitions: ["fade", "zoom", "fade"],
-  output: "docs/media/demo-{platform}.webm",
+  output: "docs/media/demo-{platform}.mp4",
   viewport: "desktop"  // or "mobile" for web
 }
 ```
@@ -109,8 +109,16 @@ Run `animate.js` to post-process all captured clips:
    - `zoom` — zoom transition between scenes
 
 3. **Stitch into single video** — concatenate all processed scenes with transitions
-4. **Delete raw clips** — only the final animated video is kept
-5. **Output** — single `.webm` file in `docs/media/`
+4. **Add background music** — overlay smooth jazz track at 15% volume (ask user for genre preference; default: jazz)
+5. **Delete raw clips** — only the final animated video is kept
+6. **Output** — single `.mp4` file (H.264, high quality, original aspect ratio preserved) in `docs/media/`
+
+**Encoding rules:**
+- Format: MP4 (H.264 codec, compatible with GitHub)
+- CRF: 18 (high quality)
+- Aspect ratio: preserve original — use `scale=-2:height` or `scale=width:-2` to maintain even dimensions
+- Audio: AAC, 192kbps
+- Never stretch or squash — always pad with black bars if needed
 
 ### Phase 5: Report
 
@@ -119,10 +127,11 @@ Return a manifest of captured files:
 ```json
 {
   "platform": "web",
-  "output": "docs/media/demo-web.webm",
+  "output": "docs/media/demo-web.mp4",
   "scenes": ["landing", "dashboard", "signup"],
   "duration": "45s",
-  "viewport": "desktop"
+  "viewport": "desktop",
+  "music": "jazz"
 }
 ```
 
@@ -132,13 +141,13 @@ All media saved to `docs/media/`:
 
 ```
 docs/media/
-├── demo-web.webm              # Web (desktop viewport, stitched video)
-├── demo-web-mobile.webm       # Web (mobile viewport, stitched video)
-├── demo-ios.webm              # iOS
-├── demo-android.webm          # Android
-├── demo-macos.webm            # macOS
-├── demo-windows.webm          # Windows
-└── demo-linux.webm            # Linux
+├── demo-web.mp4               # Web (desktop viewport, stitched video)
+├── demo-web-mobile.mp4        # Web (mobile viewport, stitched video)
+├── demo-ios.mp4               # iOS
+├── demo-android.mp4           # Android
+├── demo-macos.mp4             # macOS
+├── demo-windows.mp4           # Windows
+└── demo-linux.mp4             # Linux
 ```
 
 ## Gallery Output
@@ -193,5 +202,14 @@ The agent automatically assigns effects based on content type:
 | Windows | ffmpeg |
 | Linux | ffmpeg |
 | Animations | ffmpeg (all platforms) |
+| Music | ffmpeg (audio overlay) |
 
 If a dependency is missing, the skill should inform the user and offer installation instructions.
+
+## Background Music
+
+Default: smooth jazz at 15% volume. Ask user before adding music:
+- "Want background music? I can add **jazz** (default), **lo-fi**, **ambient**, or **none**."
+- Music is looped/cropped to match video duration
+- Volume: 15% of original audio (ducked so UI sounds remain audible)
+- Fades in over first 2s, fades out over last 2s
