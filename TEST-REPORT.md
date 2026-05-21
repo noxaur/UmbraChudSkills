@@ -47,10 +47,11 @@
   - Output: 1200x900px (original 800x600, aspect ratio preserved)
   - SKILL.md specifies: "Max width: 1200px (maintains aspect ratio), Format: PNG"
 
-- [~] **adds background music** — SKIPPED
-  - No music directory exists at `skills/record-app/music/`
-  - SKILL.md references `smooth-jazz.mp3`, `lofi-beat.mp3`, `ambient.mp3` but none present
-  - Skill correctly handles this: "If no music files exist, inform the user"
+- [~] **adds background music** — SKIPPED (runtime)
+  - Music directory exists at `skills/record-app/music/` with 4 Beethoven sonata files
+  - SKILL.md also references `smooth-jazz.mp3`, `lofi-beat.mp3`, `ambient.mp3` — not yet added
+  - Skill correctly handles missing files: "If music file not found, skip audio with warning"
+  - Runtime test skipped (no dev server + browser available for full capture)
 
 ### 2. media-editor — PASS (8/8 passed)
 
@@ -263,10 +264,10 @@ Output: `labeled.png` — PNG image data, 800 x 600, 8-bit/color RGB.
 
 ### Medium
 
-1. **Missing music files** (record-app skill)
-   - The SKILL.md references 3 music files (`smooth-jazz.mp3`, `lofi-beat.mp3`, `ambient.mp3`) in `skills/record-app/music/`
-   - Directory doesn't exist — background music feature is non-functional
-   - Add royalty-free music files or update SKILL.md to note music must be provided by user
+1. **Missing non-classical music files** (record-app skill)
+   - The SKILL.md references `smooth-jazz.mp3`, `lofi-beat.mp3`, `ambient.mp3` in `skills/record-app/music/`
+   - Only 4 Beethoven sonata files are present
+   - Add royalty-free jazz, lo-fi, and ambient tracks for variety
 
 2. **record-app skill not fully tested end-to-end**
    - The capture-web.js script requires Playwright/Chromium which wasn't tested in this run
