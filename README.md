@@ -12,7 +12,7 @@ A curated collection of OpenCode skills for codebase auditing, issue resolution,
 | [`issue-resolver`](skills/issue-resolver/) | Receive, reproduce, fix, and submit PRs for GitHub issues. Uses TDD, verification before completion, and subagent-driven development for large tasks. |
 | [`record-app`](skills/record-app/) | Capture screenshots, GIFs, and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Applies smooth animations and stitches into a polished demo video with optional jazz background music. |
 | [`media-publisher`](skills/media-publisher/) | Publish media assets to GitHub Releases for inline video playback and clickable image enlargement. Creates cumulative versioned releases (media-v1, media-v2, ...). |
-| [`create-project-readme`](skills/create-project-readme/) | Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Uses release asset URLs for inline playback. |
+| [`create-project-readme`](skills/create-project-readme/) | Analyze a codebase and generate a comprehensive README.md with embedded screenshots, GIFs, and demo videos. Uses user-attachments URLs for inline playback. |
 | [`media-editor`](skills/media-editor/) | Edit, enhance, and post-process demo videos and images. Trim, add music, watermark, resize, color-correct, and more. |
 | [`karpathy-guidelines`](skills/karpathy-guidelines/) | Behavioral guidelines to reduce common LLM coding mistakes. Think before coding, simplicity first, surgical changes, goal-driven execution. |
 
@@ -81,7 +81,7 @@ Invoke the orchestrator in OpenCode:
 @test-orchestrator run all skill tests
 ```
 
-It will launch 5 parallel test subagents, collect results, and save a `TEST-REPORT.md`.
+It will launch 6 parallel test subagents, collect results, and save a `TEST-REPORT.md`.
 
 ## Structure
 
@@ -135,5 +135,3 @@ agents/
 ## License
 
 MIT
-
-Note: You will receive updates when new media is published.
