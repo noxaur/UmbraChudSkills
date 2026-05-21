@@ -1,4 +1,4 @@
-# capture-windows.ps1 — Windows native app screen capture
+# capture-windows.ps1 — Windows native app screen capture (H.264 MP4 output)
 # Usage: ./capture-windows.ps1 <config.json>
 
 param(
@@ -16,7 +16,7 @@ if (-not (Get-Command ffmpeg -ErrorAction SilentlyContinue)) {
 
 # Parse config
 $config = Get-Content $ConfigFile | ConvertFrom-Json
-$outputFile = if ($config.output) { $config.output } else { "docs/media/demo-windows.webm" }
+$outputFile = if ($config.output) { $config.output } else { "docs/media/demo-windows.mp4" }
 $outputDir = Split-Path $outputFile -Parent
 $tmpDir = Join-Path $outputDir ".raw-captures"
 
@@ -62,7 +62,7 @@ if ($clipPaths.Count -eq 1) {
     $first = $clipPaths[0]
     ffmpeg -y -loop 1 -i $first `
         -vf "zoompan=z='min(zoom+0.0015,1.5)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1280x720:fps=25" `
-        -t 5 -c:v libvpx-vp9 -pix_fmt yuv420p $outputFile
+        -t 5 -c:v libx264 -pix_fmt yuv420p $outputFile
 } else {
     $inputs = ""
     $filter = ""
@@ -79,7 +79,7 @@ if ($clipPaths.Count -eq 1) {
     }
     $filter += "[t$($clipPaths.Count - 1)]null[outv]"
 
-    ffmpeg -y $inputs -filter_complex $filter -map "[outv]" -c:v libvpx-vp9 -pix_fmt yuv420p $outputFile
+    ffmpeg -y $inputs -filter_complex $filter -map "[outv]" -c:v libx264 -pix_fmt yuv420p $outputFile
 }
 
 # Clean up

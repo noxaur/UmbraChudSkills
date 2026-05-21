@@ -1,5 +1,5 @@
 #!/bin/bash
-# capture-linux.sh — Linux native app screen capture
+# capture-linux.sh — Linux native app screen capture (H.264 MP4 output)
 # Usage: ./capture-linux.sh <config.json>
 
 set -e
@@ -19,17 +19,20 @@ if ! command -v ffmpeg &> /dev/null; then
   exit 1
 fi
 
-# Parse config
-OUTPUT=$(python3 -c "
-import json
-with open('$CONFIG_FILE') as f:
+# Parse config (pass filename as arg to avoid shell injection)
+parse_config() {
+  python3 -c "
+import json, sys
+with open(sys.argv[1]) as f:
     config = json.load(f)
-print(config.get('output', 'docs/media/demo-linux.webm'))
+print(config.get('output', 'docs/media/demo-linux.mp4'))
 scenes = config.get('scenes', [])
 for s in scenes:
-    print(f\"SCENE:{s['name']}:{s.get('path', '/')}\")
-")
+    print(f'SCENE:{s[\"name\"]}:{s.get(\"path\", \"/\")}')
+" "$CONFIG_FILE"
+}
 
+OUTPUT=$(parse_config)
 OUTPUT_FILE=$(echo "$OUTPUT" | head -1)
 SCENES=$(echo "$OUTPUT" | grep "^SCENE:" | sed 's/^SCENE://')
 
@@ -41,11 +44,11 @@ mkdir -p "$TMP_DIR"
 
 # Launch app if command provided
 APP_CMD=$(python3 -c "
-import json
-with open('$CONFIG_FILE') as f:
+import json, sys
+with open(sys.argv[1]) as f:
     config = json.load(f)
 print(config.get('appCommand', ''))
-" 2>/dev/null || echo "")
+" "$CONFIG_FILE" 2>/dev/null || echo "")
 
 if [ -n "$APP_CMD" ]; then
   echo "Launching app: $APP_CMD"
@@ -111,7 +114,7 @@ fi
 if [ ${#CLIP_PATHS[@]} -eq 1 ]; then
   ffmpeg -y -loop 1 -i "${CLIP_PATHS[0]}" \
     -vf "zoompan=z='min(zoom+0.0015,1.5)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1280x720:fps=25" \
-    -t 5 -c:v libvpx-vp9 -pix_fmt yuv420p "$OUTPUT_FILE"
+    -t 5 -c:v libx264 -pix_fmt yuv420p "$OUTPUT_FILE"
 else
   INPUTS=""
   for i in "${!CLIP_PATHS[@]}"; do
@@ -129,7 +132,7 @@ else
   done
   FILTER="${FILTER}[t$(( ${#CLIP_PATHS[@]} - 1 ))]null[outv]"
 
-  ffmpeg -y $INPUTS -filter_complex "$FILTER" -map "[outv]" -c:v libvpx-vp9 -pix_fmt yuv420p "$OUTPUT_FILE"
+  ffmpeg -y $INPUTS -filter_complex "$FILTER" -map "[outv]" -c:v libx264 -pix_fmt yuv420p "$OUTPUT_FILE"
 fi
 
 # Kill launched app if started

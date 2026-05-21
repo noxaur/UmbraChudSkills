@@ -1,5 +1,5 @@
 #!/bin/bash
-# capture-ios.sh — iOS Simulator screen capture
+# capture-ios.sh — iOS Simulator screen capture (stitches screenshots into H.264 MP4)
 # Usage: ./capture-ios.sh <config.json>
 # Config format: see SKILL.md Phase 2 example
 
@@ -18,17 +18,42 @@ if ! command -v xcrun &> /dev/null; then
   exit 1
 fi
 
-# Parse config (basic JSON parsing with python3)
-OUTPUT=$(python3 -c "
+build_ios_filter() {
+  local count=$1
+  if [ "$count" -le 1 ]; then
+    echo "[0:v]scale=1280:720,setsar=1,fps=25[outv]"
+    return
+  fi
+
+  local filter=""
+  for ((i=0; i<count; i++)); do
+    filter="${filter}[${i}:v]scale=1280:720,setsar=1,fps=25[v${i}];"
+  done
+
+  # Chain with fade transitions
+  filter="${filter}[v0][v1]xfade=transition=fade:duration=0.5:offset=2.5[t1];"
+  for ((i=2; i<count; i++)); do
+    local prev="t$((i-1))"
+    filter="${filter}[${prev}][v${i}]xfade=transition=fade:duration=0.5:offset=$(( (i-1) * 2500 / 1000 ))[t${i}];"
+  done
+  filter="${filter}[t$((count-1))]null[outv]"
+  echo "$filter"
+}
+
+# Parse config (pass filename as arg to avoid shell injection)
+parse_config() {
+  python3 -c "
 import json, sys
-with open('$CONFIG_FILE') as f:
+with open(sys.argv[1]) as f:
     config = json.load(f)
-print(config.get('output', 'docs/media/demo-ios.webm'))
+print(config.get('output', 'docs/media/demo-ios.mp4'))
 scenes = config.get('scenes', [])
 for s in scenes:
-    print(f\"SCENE:{s['name']}:{s.get('path', '/')}\")
-")
+    print(f'SCENE:{s[\"name\"]}:{s.get(\"path\", \"/\")}')
+" "$CONFIG_FILE"
+}
 
+OUTPUT=$(parse_config)
 OUTPUT_FILE=$(echo "$OUTPUT" | head -1)
 SCENES=$(echo "$OUTPUT" | grep "^SCENE:" | sed 's/^SCENE://')
 
@@ -54,11 +79,11 @@ sleep 3
 # Launch app (assumes app is already installed in simulator)
 # If app bundle ID is provided, launch it
 APP_BUNDLE_ID=$(python3 -c "
-import json
-with open('$CONFIG_FILE') as f:
+import json, sys
+with open(sys.argv[1]) as f:
     config = json.load(f)
 print(config.get('appBundleId', ''))
-" 2>/dev/null || echo "")
+" "$CONFIG_FILE" 2>/dev/null || echo "")
 
 if [ -n "$APP_BUNDLE_ID" ]; then
   echo "Launching app: $APP_BUNDLE_ID"
@@ -91,7 +116,7 @@ fi
 if [ ${#CLIP_PATHS[@]} -eq 1 ]; then
   ffmpeg -y -loop 1 -i "${CLIP_PATHS[0]}" \
     -vf "zoompan=z='min(zoom+0.0015,1.5)':d=125:x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1280x720:fps=25" \
-    -t 5 -c:v libvpx-vp9 -pix_fmt yuv420p "$OUTPUT_FILE"
+    -t 5 -c:v libx264 -pix_fmt yuv420p "$OUTPUT_FILE"
 else
   # Build ffmpeg command for multiple images
   INPUTS=""
@@ -103,7 +128,7 @@ else
   # Simple fade transitions between scenes
   ffmpeg -y $INPUTS \
     -filter_complex "$(build_ios_filter ${#CLIP_PATHS[@]})" \
-    -map "[outv]" -c:v libvpx-vp9 -pix_fmt yuv420p "$OUTPUT_FILE"
+    -map "[outv]" -c:v libx264 -pix_fmt yuv420p "$OUTPUT_FILE"
 fi
 
 # Clean up
@@ -111,25 +136,3 @@ rm -rf "$TMP_DIR"
 
 echo ""
 echo "Done: $OUTPUT_FILE"
-
-build_ios_filter() {
-  local count=$1
-  if [ "$count" -le 1 ]; then
-    echo "[0:v]scale=1280:720,setsar=1,fps=25[outv]"
-    return
-  fi
-
-  local filter=""
-  for ((i=0; i<count; i++)); do
-    filter="${filter}[${i}:v]scale=1280:720,setsar=1,fps=25[v${i}];"
-  done
-
-  # Chain with fade transitions
-  filter="${filter}[v0][v1]xfade=transition=fade:duration=0.5:offset=2.5[t1];"
-  for ((i=2; i<count; i++)); do
-    local prev="t$((i-1))"
-    filter="${filter}[${prev}][v${i}]xfade=transition=fade:duration=0.5:offset=$(( (i-1) * 2500 / 1000 ))[t${i}];"
-  done
-  filter="${filter}[t$((count-1))]null[outv]"
-  echo "$filter"
-}
