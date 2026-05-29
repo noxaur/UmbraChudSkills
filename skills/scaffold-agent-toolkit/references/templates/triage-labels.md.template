@@ -1,0 +1,9 @@
+# Triage labels
+
+Canonical triage roles for agent skills and humans. Edit the tracker column to match your host (GitHub, GitLab, etc.).
+
+**See also:** [orchestration.md](orchestration.md), [issue-tracker.md](issue-tracker.md).
+
+{{TRIAGE_LABELS_TABLE}}
+
+When a skill mentions a role (e.g. "apply the AFK-ready triage label"), use the label string from this table.

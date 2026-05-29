@@ -1,0 +1,26 @@
+# Implementation guides (for agents)
+
+Current-state reference for working in this codebase. Add guides when a subsystem is non-trivial.
+
+**When to use:** You have an issue and need patterns, file locations, and guardrails.
+
+**When not to use:** Picking work or release process. Use [orchestration.md](../orchestration.md) and [docs/ROADMAP.md](../../ROADMAP.md).
+
+## Guide index
+
+| Guide | Topics |
+|-------|--------|
+| (none yet) | Add rows as guides are written |
+
+## By task type
+
+| You need to… | Start here |
+|--------------|------------|
+| Orient in repo | TBD first guide |
+| Agent workflows | [orchestration.md](../orchestration.md) |
+
+## Adding a guide
+
+1. Create `docs/agents/guides/<topic>.md`
+2. Add a row to the index table above
+3. Link from the relevant GitHub issue or ROADMAP row

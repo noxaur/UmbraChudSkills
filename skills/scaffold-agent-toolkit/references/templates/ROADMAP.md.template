@@ -1,0 +1,40 @@
+# {{PROJECT_NAME}} roadmap / backlog
+
+Planned work tracked as issues. See [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) for CLI conventions.
+
+**Status key:** `idea`, `in-progress`, `blocked`, `done`
+
+**Priority key:**
+
+| Priority | Meaning |
+|----------|---------|
+| **P0** | Do first |
+| **P1** | High value after P0 |
+| **P2** | Polish |
+| **P3** | Later or blocked |
+
+---
+
+## Execution order
+
+Work top to bottom. Respect **Depends on** unless the dependency is explicitly done.
+
+### Phase 0: Bootstrap
+
+| Order | ID | Priority | Issue | Depends on | Notes |
+|-------|-----|----------|-------|------------|-------|
+| 1 | BOOT-1 | P0 | TBD | None | Agent toolkit and CI skeleton |
+
+### Phase 1: (rename when known)
+
+| Order | ID | Priority | Issue | Depends on | Notes |
+|-------|-----|----------|-------|------------|-------|
+| | | | | | |
+
+---
+
+## How to add rows
+
+1. Create a GitHub issue with acceptance criteria.
+2. Add a row with a short ID (e.g. `API-1`).
+3. Apply triage labels per [docs/agents/triage-labels.md](docs/agents/triage-labels.md).

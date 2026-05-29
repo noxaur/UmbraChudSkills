@@ -10,11 +10,12 @@ A curated collection of OpenCode skills for codebase auditing, issue resolution,
 |-------|-------------|
 | [`codebase-auditor`](skills/codebase-auditor/) | Analyze a codebase for bugs, security, performance, and architecture issues. Verifies each issue by reproducing it, creates GitHub issues, then uses the triage skill to review, label, and comment. |
 | [`issue-resolver`](skills/issue-resolver/) | Receive, reproduce, fix, and submit PRs for GitHub issues. Uses TDD, verification before completion, and subagent-driven development for large tasks. |
-| [`record-app`](skills/record-app/) | Capture screenshots and videos of any application — web, iOS, Android, macOS, Windows, or Linux. Stitches clips into a polished demo video with optional background music (default: Beethoven). |
+| [`record-app`](skills/record-app/) | Capture screenshots and videos of any application: web, iOS, Android, macOS, Windows, or Linux. Stitches clips into a polished demo video with optional background music (default: Beethoven). |
 | [`media-publisher`](skills/media-publisher/) | Guide the user through publishing media to GitHub. Videos require manual browser upload for inline playback; images can use Release URLs. |
 | [`create-project-readme`](skills/create-project-readme/) | Analyze a codebase and generate a comprehensive README.md with embedded screenshots and demo videos. Videos require manual browser upload for inline playback. |
 | [`media-editor`](skills/media-editor/) | Edit, enhance, and post-process demo videos and images. Trim, add music, watermark, resize, color-correct, and more. |
 | [`karpathy-guidelines`](skills/karpathy-guidelines/) | Behavioral guidelines to reduce common LLM coding mistakes. Think before coding, simplicity first, surgical changes, goal-driven execution. |
+| [`scaffold-agent-toolkit`](skills/scaffold-agent-toolkit/) | Bootstrap agent orchestration for any repo (empty repos OK): `AGENTS.md`, `docs/agents/`, `CONTEXT.md`, triage labels, verify runbooks, subagent prompts. Mandatory intake before writing files. |
 
 ## Installation
 
@@ -22,6 +23,12 @@ A curated collection of OpenCode skills for codebase auditing, issue resolution,
 
 ```bash
 npx skills add noxaur/UmbraChudSkills
+```
+
+Install one skill:
+
+```bash
+npx skills add noxaur/UmbraChudSkills --skill scaffold-agent-toolkit
 ```
 
 ### Global Install (all skills)
@@ -54,7 +61,8 @@ To add a new skill to this collection:
    ---
    ```
 3. Add any supporting files (scripts, reference docs, etc.)
-4. Update this README's skills table
+4. Add the skill `name` to `skills.sh.json` under a grouping (or it appears in "ungrouped")
+5. Update this README's skills table
 
 ## Test Agents
 
@@ -97,6 +105,11 @@ skills/
 │   └── SKILL.md
 ├── karpathy-guidelines/
 │   └── SKILL.md
+├── scaffold-agent-toolkit/
+│   ├── SKILL.md
+│   └── references/
+│       ├── file-tree.md
+│       └── templates/
 ├── media-editor/
 │   └── SKILL.md
 ├── media-publisher/
@@ -104,31 +117,11 @@ skills/
 └── record-app/
     ├── SKILL.md
     ├── music/
-    │   ├── beethoven-sonata-1.mp3
-    │   ├── beethoven-sonata-15.mp3
-    │   ├── beethoven-sonata-22.mp3
-    │   └── beethoven-sonata-32.mp3
     └── scripts/
-        ├── capture-web.js
-        ├── capture-ios.sh
-        ├── capture-android.sh
-        ├── capture-macos.sh
-        ├── capture-windows.ps1
-        ├── capture-linux.sh
-        └── resize-images.sh
-
-docs/media/                         # Generated at runtime by record-app
-├── demo-web.mp4
-├── landing-desktop-web.png
-└── dashboard-desktop-web.png
 
 agents/
 ├── test-orchestrator.md
-├── test-record-app.md
-├── test-media-editor.md
-├── test-codebase-auditor.md
-├── test-issue-resolver.md
-└── test-create-project-readme.md
+└── ...
 ```
 
 ## License
