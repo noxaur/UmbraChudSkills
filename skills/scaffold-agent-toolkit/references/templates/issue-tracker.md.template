@@ -1,0 +1,29 @@
+# Issue tracker: {{ISSUE_TRACKER_NAME}}
+
+Issues for this repo live on **{{ISSUE_TRACKER_NAME}}**. Use the conventions below.
+
+**See also:** [README.md](README.md), [orchestration.md](orchestration.md), [triage-labels.md](triage-labels.md).
+
+Repository: `{{REPO_SLUG}}` ({{REPO_URL}})
+
+## Conventions
+
+{{ISSUE_TRACKER_CLI_SECTION}}
+
+Infer the repo from `git remote -v` when using `gh` inside a clone.
+
+## Agent workflow
+
+1. List open work: filter by `ready-for-agent`
+2. Read spec and comments before coding
+3. Comment before large work: "Starting work on ..."
+4. On PR open: `Fixes #<number>` in the PR body
+5. Prefer roadmap-backed issues from [docs/ROADMAP.md](../ROADMAP.md)
+
+## When a skill says "publish to the issue tracker"
+
+Create an issue with acceptance criteria and labels per [triage-labels.md](triage-labels.md).
+
+## When a skill says "fetch the relevant ticket"
+
+Load the full issue body and comments before implementing.

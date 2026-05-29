@@ -1,0 +1,42 @@
+# {{PROJECT_NAME}} autonomous verify runbook
+
+Agents use this to verify changes without manual steps where possible.
+
+**Hub:** [README.md](README.md) | **Workflow:** [orchestration.md](orchestration.md)
+
+## Prerequisites
+
+{{VERIFY_PREREQUISITES}}
+
+## Tier 0: Static (no live environment)
+
+From repo root:
+
+```bash
+{{VERIFY_SCRIPT}}
+```
+
+Checks: build, lint, unit tests, packaging layout (customize in script).
+
+Exit code non-zero = failure. Document failures in the PR.
+
+## Tier 1: Live / integration (optional)
+
+{{TIER_1_INSTRUCTIONS}}
+
+## Tier 2: Post-session artifacts (optional)
+
+{{TIER_2_INSTRUCTIONS}}
+
+## Tier 3: Extended suites (optional)
+
+{{TIER_3_INSTRUCTIONS}}
+
+## MCP tools (optional)
+
+| Step | Tool | Purpose |
+|------|------|---------|
+| 1 | `{{MCP_PING_TOOL}}` | Confirm debug bridge alive |
+| 2 | `{{MCP_VERIFY_TOOL}}` | Health checks |
+
+Configure `.cursor/mcp.json` when a project MCP server exists.
