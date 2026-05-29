@@ -1,0 +1,26 @@
+{
+  "$schema": "https://skills.sh/schemas/skills.sh.schema.json",
+  "notGrouped": "bottom",
+  "groupings": [
+    {
+      "title": "Agent infrastructure",
+      "description": "Scaffold orchestration docs, agent hubs, and verify runbooks for any repository.",
+      "skills": ["scaffold-agent-toolkit"]
+    },
+    {
+      "title": "Development workflow",
+      "description": "Issues, audits, and coding discipline for shipping fixes safely.",
+      "skills": ["issue-resolver", "codebase-auditor", "karpathy-guidelines"]
+    },
+    {
+      "title": "Media and documentation",
+      "description": "Capture, edit, publish demos, and generate project READMEs.",
+      "skills": [
+        "record-app",
+        "media-editor",
+        "media-publisher",
+        "create-project-readme"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+# {{PROJECT_NAME}} - Agent Instructions
+
+Human contributors: see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Agent orchestration hub: [docs/agents/README.md](docs/agents/README.md).
+
+## Build and test
+
+Run from repository root:
+
+```bash
+{{BUILD_CMD}}
+```
+
+```bash
+{{TEST_CMD}}
+```
+
+```bash
+{{LINT_CMD}}
+```
+
+If commands are not defined yet, stop and update this section in the first implementation PR.
+
+## Branch and PR policy
+
+- Default branch: `{{DEFAULT_BRANCH}}`
+- Feature branches: `{{CLOUD_BRANCH_PATTERN}}` (Cloud Agents) or team convention
+- Link issues in PR body: `Fixes #NNN` or `Related to #NNN`
+- Pick work labeled `ready-for-agent` when using GitHub (see [docs/agents/triage-labels.md](docs/agents/triage-labels.md))
+
+## Versioning and changelog
+
+{{VERSIONING_POLICY}}
+
+Maintain `## [Unreleased]` in `CHANGELOG.md` when the project ships versioned releases.
+
+## Verify
+
+| Tier | When | Command / doc |
+|------|------|----------------|
+| 0 | Every PR (static) | `{{VERIFY_SCRIPT}}` or CI equivalent |
+| 1+ | Optional live / integration | [docs/agents/verify-{{PROJECT_SLUG}}.md](docs/agents/verify-{{PROJECT_SLUG}}.md) |
+
+## Agent doc index
+
+| Topic | Doc |
+|-------|-----|
+| Start here | [docs/agents/README.md](docs/agents/README.md) |
+| Workflows | [docs/agents/orchestration.md](docs/agents/orchestration.md) |
+| Issues | [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md) |
+| Labels | [docs/agents/triage-labels.md](docs/agents/triage-labels.md) |
+| Domain + ADRs | [docs/agents/domain.md](docs/agents/domain.md) |
+| Glossary | [CONTEXT.md](CONTEXT.md) |
+| Backlog | [docs/ROADMAP.md](docs/ROADMAP.md) |
+
+## Paths agents must not edit
+
+{{AGENT_DENY_PATHS}}
+
+## Release (maintainers)
+
+{{RELEASE_INSTRUCTIONS}}

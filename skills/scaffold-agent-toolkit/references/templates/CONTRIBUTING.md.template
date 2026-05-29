@@ -1,0 +1,31 @@
+# Contributing to {{PROJECT_NAME}}
+
+## Before you start
+
+| Resource | Purpose |
+|----------|---------|
+| [docs/ROADMAP.md](docs/ROADMAP.md) | Backlog and priorities |
+| [docs/agents/README.md](docs/agents/README.md) | Agent orchestration hub |
+| [docs/agents/orchestration.md](docs/agents/orchestration.md) | Workflows and PR checklist |
+| [AGENTS.md](AGENTS.md) | Build, test, and agent policy |
+| [CONTEXT.md](CONTEXT.md) | Domain glossary |
+
+**Picking work:** Prefer issues labeled `ready-for-agent`. Comment before large changes.
+
+**Verify locally:**
+
+```bash
+{{VERIFY_SCRIPT}}
+```
+
+See [docs/agents/verify-{{PROJECT_SLUG}}.md](docs/agents/verify-{{PROJECT_SLUG}}.md) when present.
+
+## Building
+
+{{HUMAN_BUILD_SECTION}}
+
+## Pull requests
+
+- Target branch: `{{DEFAULT_BRANCH}}`
+- Link issues with `Fixes #NNN`
+- Run Tier 0 verify before requesting review

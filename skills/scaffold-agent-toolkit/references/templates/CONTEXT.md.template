@@ -1,0 +1,33 @@
+# {{PROJECT_NAME}}
+
+Bounded context for **{{PROJECT_NAME}}**: {{ONE_LINE_PRODUCT_DESCRIPTION}}.
+
+This file is a **domain glossary** plus a short **file map** for onboarding. Details live in `docs/adr/` and code.
+
+**Related:** [docs/agents/domain.md](docs/agents/domain.md)
+
+## Language
+
+### Core terms
+
+**{{TERM_1}}**:
+{{DEFINITION_1}}
+_Avoid_: {{ANTI_PATTERN_1}}
+
+**{{TERM_2}}**:
+{{DEFINITION_2}}
+_Avoid_: {{ANTI_PATTERN_2}}
+
+**{{TERM_3}}**:
+{{DEFINITION_3}}
+_Avoid_: {{ANTI_PATTERN_3}}
+
+Add entries as the codebase grows. Do not invent terms here without a corresponding concept in code or issues.
+
+## File map (high level)
+
+| Area | Path | Notes |
+|------|------|-------|
+| Source | `{{SOURCE_ROOT}}` | TBD |
+| Tests | `{{TEST_ROOT}}` | TBD |
+| Agent hub | `docs/agents/README.md` | Start here for agents |
